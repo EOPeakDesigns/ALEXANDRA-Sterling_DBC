@@ -667,6 +667,11 @@ Each component is self-contained and reusable.
   pointer-events: none;
 }
 
+.install-banner__action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .install-banner__action.is-ready {
   box-shadow: 0 3px 14px rgba(127, 201, 195, 0.45);
 }

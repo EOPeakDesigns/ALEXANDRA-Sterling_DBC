@@ -1,15 +1,13 @@
-const CACHE_VERSION = 'dbc-v29';
+const CACHE_VERSION = 'dbc-v30';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
-  '/',
   '/index.html',
   '/offline.html',
-  '/manifest.webmanifest',
   '/data/card.json',
   '/js/pwa.js',
   '/js/main.js',
-  '/js/components/InstallBanner.js?v=12',
+  '/js/components/InstallBanner.js?v=13',
   '/styles/variables.css',
   '/styles/base.css',
   '/styles/components.css',
@@ -32,6 +30,12 @@ const PRECACHE_URLS = [
   '/assets/images/MYQR.png'
 ];
 
+const NETWORK_FIRST_PATHS = [
+  '/manifest.webmanifest',
+  '/site.webmanifest',
+  '/sw.js'
+];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
@@ -51,6 +55,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') {
     return;
@@ -59,6 +69,11 @@ self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
   if (requestUrl.origin !== self.location.origin) {
+    return;
+  }
+
+  if (NETWORK_FIRST_PATHS.includes(requestUrl.pathname)) {
+    event.respondWith(networkOnly(event.request));
     return;
   }
 
@@ -86,18 +101,21 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+function networkOnly(request) {
+  return fetch(request);
+}
+
 function handleNavigate(request) {
   return fetch(request)
     .then((response) => {
       if (response && response.status === 200) {
         const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', clone));
       }
       return response;
     })
     .catch(() =>
-      caches.match(request)
-        .then((cached) => cached || caches.match('/index.html'))
+      caches.match('/index.html')
         .then((cached) => cached || caches.match('/offline.html'))
     );
 }

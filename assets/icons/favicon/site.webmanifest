@@ -4,33 +4,14 @@
   "description": "Professional Creative Designer - From Thought to Masterpiece",
   "lang": "en",
   "dir": "ltr",
-  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "theme_color": "#7FC9C3",
   "background_color": "#FFF0EC",
   "prefer_related_applications": false,
-  "categories": ["business", "productivity"],
   "icons": [
-    {
-      "src": "/assets/icons/favicon/png/favicon-16x16.png",
-      "sizes": "16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/icons/favicon/png/favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/icons/favicon/png/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
     {
       "src": "/assets/icons/favicon/png/android-chrome-192x192.png",
       "sizes": "192x192",
@@ -42,12 +23,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/assets/icons/favicon/png/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
