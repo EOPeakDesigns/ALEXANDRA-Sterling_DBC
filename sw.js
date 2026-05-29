@@ -1,35 +1,35 @@
-const CACHE_VERSION = 'dbc-v27';
+const CACHE_VERSION = 'dbc-v28';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
-  './',
-  './index.html',
-  './data/card.json',
-  './styles/variables.css',
-  './styles/base.css',
-  './styles/components.css',
-  './styles/animations.css',
-  './styles/responsive.css',
-  './js/main.js',
-  './js/utils/clipboard.js',
-  './js/utils/accessibility.js',
-  './js/utils/contactLinks.js',
-  './js/utils/vcard.js',
-  './js/utils/share.js',
-  './js/components/ContactRow.js',
-  './js/components/SocialBar.js',
-  './js/components/QRModal.js',
-  './js/components/VideoModal.js?v=2',
-  './manifest.webmanifest',
-  './js/components/InstallBanner.js?v=10',
-  './js/components/ActionFlower.js',
-  './assets/icons/favicon/site.webmanifest',
-  './assets/icons/favicon/svg/favicon.svg',
-  './assets/icons/favicon/png/apple-touch-icon.png',
-  './assets/icons/favicon/png/android-chrome-192x192.png',
-  './assets/icons/favicon/png/android-chrome-512x512.png',
-  './assets/images/Owner.webp',
-  './assets/images/MYQR.png'
+  '/',
+  '/index.html',
+  '/offline.html',
+  '/manifest.webmanifest',
+  '/data/card.json',
+  '/js/pwa.js',
+  '/js/main.js',
+  '/js/components/InstallBanner.js?v=11',
+  '/styles/variables.css',
+  '/styles/base.css',
+  '/styles/components.css',
+  '/styles/animations.css',
+  '/styles/responsive.css',
+  '/js/utils/clipboard.js',
+  '/js/utils/accessibility.js',
+  '/js/utils/contactLinks.js',
+  '/js/utils/vcard.js',
+  '/js/utils/share.js',
+  '/js/components/ContactRow.js',
+  '/js/components/SocialBar.js',
+  '/js/components/QRModal.js',
+  '/js/components/VideoModal.js?v=2',
+  '/js/components/ActionFlower.js',
+  '/assets/icons/favicon/png/android-chrome-192x192.png',
+  '/assets/icons/favicon/png/android-chrome-512x512.png',
+  '/assets/icons/favicon/png/apple-touch-icon.png',
+  '/assets/images/Owner.webp',
+  '/assets/images/MYQR.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -47,9 +47,8 @@ self.addEventListener('activate', (event) => {
       Promise.all(
         keys.filter((key) => key.startsWith('business-card-') && key !== CACHE_NAME).map((key) => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -63,14 +62,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (event.request.mode === 'navigate' || shouldUseNetworkFirst(requestUrl)) {
-    event.respondWith(networkFirst(event.request));
+  if (event.request.mode === 'navigate') {
+    event.respondWith(handleNavigate(event.request));
     return;
   }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      const networkFetch = fetch(event.request)
+      if (cached) {
+        return cached;
+      }
+
+      return fetch(event.request)
         .then((response) => {
           if (response && response.status === 200 && response.type === 'basic') {
             const clone = response.clone();
@@ -79,30 +82,22 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => cached);
-
-      return cached || networkFetch;
     })
   );
 });
 
-function shouldUseNetworkFirst(url) {
-  return (
-    url.pathname.endsWith('.html') ||
-    url.pathname.endsWith('.js') ||
-    url.pathname.endsWith('.css') ||
-    url.pathname.endsWith('.json') ||
-    url.pathname === '/'
-  );
-}
-
-function networkFirst(request) {
+function handleNavigate(request) {
   return fetch(request)
     .then((response) => {
-      if (response && response.status === 200 && response.type === 'basic') {
+      if (response && response.status === 200) {
         const clone = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
       }
       return response;
     })
-    .catch(() => caches.match(request));
+    .catch(() =>
+      caches.match(request)
+        .then((cached) => cached || caches.match('/index.html'))
+        .then((cached) => cached || caches.match('/offline.html'))
+    );
 }

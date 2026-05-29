@@ -15,14 +15,8 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/favicon/png/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/favicon/png/android-chrome-512x512.png">
   <link rel="manifest" href="/manifest.webmanifest">
-  <script>
-    window.__dbcDeferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', function(event) {
-      event.preventDefault();
-      window.__dbcDeferredPrompt = event;
-      window.dispatchEvent(new Event('dbc-pwa-prompt-ready'));
-    });
-  </script>
+  <script src="/js/pwa.js"></script>
+  <meta name="application-name" content="Alexandra Sterling">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -427,7 +421,7 @@
   <script src="js/components/QRModal.js"></script>
   <script src="js/components/VideoModal.js?v=2"></script>
   <script src="js/components/ActionFlower.js"></script>
-  <script src="js/components/InstallBanner.js?v=10"></script>
+  <script src="js/components/InstallBanner.js?v=11"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

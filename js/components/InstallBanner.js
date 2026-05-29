@@ -247,41 +247,12 @@ const PWAInstall = {
   }
 };
 
-function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) {
-    return;
-  }
-
-  if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
-    return;
-  }
-
-  if (registerServiceWorker.started) {
-    return;
-  }
-
-  registerServiceWorker.started = true;
-
-  const register = () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((error) => {
-      console.warn('Service worker registration failed:', error);
-    });
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', register, { once: true });
-  } else {
-    register();
-  }
-}
-
 function bootPwaInstall() {
   if (window.location.protocol === 'file:') {
     return;
   }
 
   PWAInstall.init();
-  registerServiceWorker();
 }
 
 if (document.readyState === 'loading') {
@@ -291,5 +262,5 @@ if (document.readyState === 'loading') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { PWAInstall, registerServiceWorker };
+  module.exports = { PWAInstall };
 }
