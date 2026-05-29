@@ -370,9 +370,7 @@ class BusinessCardApp {
         installText: 'One-tap access anytime.',
         installApp: 'Install',
         installDismiss: 'Not now',
-        installGuideIOS: 'Tap Share, then Add to Home Screen.',
-        installGuideAndroid: 'Tap menu, then Install app.',
-        installGuideOther: 'Use your browser menu to add this card to your home screen.'
+        installGuideIOS: 'Tap Share, then Add to Home Screen.'
       });
       this.components.set('installBanner', installBanner);
     } catch (error) {

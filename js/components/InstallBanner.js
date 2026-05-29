@@ -1,15 +1,9 @@
 /**
- * PWA Install Banner - compact mobile prompt, bottom-right
+ * PWA Install Banner — native install on Android, Share sheet on iOS
  */
 
 const INSTALL_INSTALLED_KEY = 'dbc-install-installed-v5';
-const SHOW_ATTEMPT_DELAYS_MS = [600, 1800, 3500, 6000];
-
-const DEFAULT_INSTALL_GUIDES = {
-  ios: 'Tap Share, then Add to Home Screen.',
-  android: 'Tap menu, then Install app.',
-  other: 'Use your browser menu to add this card to your home screen.'
-};
+const SHOW_ATTEMPT_DELAYS_MS = [400, 1200, 2500, 5000, 8000];
 
 class InstallBanner {
   constructor(element) {
@@ -24,9 +18,10 @@ class InstallBanner {
     this.promptReceived = false;
     this.isVisible = false;
     this.closedForCurrentPage = false;
+    this.isPreparingInstall = false;
     this.showTimers = [];
-    this.guides = { ...DEFAULT_INSTALL_GUIDES };
     this.labels = {};
+    this.defaultInstallLabel = 'Install';
 
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handleAppInstalled = this.handleAppInstalled.bind(this);
@@ -48,23 +43,12 @@ class InstallBanner {
     }
 
     if (labels.installApp && this.installButton) {
+      this.defaultInstallLabel = labels.installApp;
       this.installButton.textContent = labels.installApp;
     }
 
     if (labels.installDismiss && this.dismissButton) {
       this.dismissButton.textContent = labels.installDismiss;
-    }
-
-    if (labels.installGuideIOS) {
-      this.guides.ios = labels.installGuideIOS;
-    }
-
-    if (labels.installGuideAndroid) {
-      this.guides.android = labels.installGuideAndroid;
-    }
-
-    if (labels.installGuideOther) {
-      this.guides.other = labels.installGuideOther;
     }
   }
 
@@ -77,6 +61,7 @@ class InstallBanner {
     this.clearStaleInstalledFlag();
 
     window.addEventListener('dbcinstallpromptready', this.handlePromptReady);
+    window.addEventListener('beforeinstallprompt', this.handlePromptReady);
     window.addEventListener('dbcserviceworkerready', this.handleServiceWorkerReady);
     window.addEventListener('appinstalled', this.handleAppInstalled);
 
@@ -121,22 +106,45 @@ class InstallBanner {
     }
   }
 
-  handlePromptReady() {
-    if (window.__dbcInstallPromptEvent) {
-      this.setDeferredPrompt(window.__dbcInstallPromptEvent);
+  handlePromptReady(event) {
+    const prompt = this.resolvePromptFromEvent(event);
+
+    if (prompt) {
+      this.setDeferredPrompt(prompt);
     }
+  }
+
+  resolvePromptFromEvent(event) {
+    if (event && typeof event.prompt === 'function') {
+      return event;
+    }
+
+    if (event?.detail && typeof event.detail.prompt === 'function') {
+      return event.detail;
+    }
+
+    return window.__dbcInstallPromptEvent || null;
   }
 
   handleServiceWorkerReady() {
     this.attemptShow();
+    this.updateInstallButtonState();
   }
 
   setDeferredPrompt(event) {
     this.deferredPrompt = event;
+    window.__dbcInstallPromptEvent = event;
     this.promptReceived = true;
+    this.isPreparingInstall = false;
     this.hideGuide();
     this.updateInstallButtonState();
     this.attemptShow();
+
+    if (this.guideEl && this.isAndroidDevice() && !this.isInAppBrowser()) {
+      this.guideEl.textContent = 'Install is ready — tap Install again.';
+      this.guideEl.hidden = false;
+      window.setTimeout(() => this.hideGuide(), 2800);
+    }
   }
 
   handleAppInstalled() {
@@ -146,72 +154,180 @@ class InstallBanner {
   }
 
   getAvailablePrompt() {
-    return this.deferredPrompt || window.__dbcInstallPromptEvent || null;
-  }
-
-  /**
-   * Must call prompt() synchronously inside the click handler
-   * or Android Chrome will block the native install dialog.
-   */
-  handleInstallClick() {
-    const prompt = this.getAvailablePrompt();
+    const prompt = this.deferredPrompt || window.__dbcInstallPromptEvent;
 
     if (prompt && typeof prompt.prompt === 'function') {
-      this.hideGuide();
+      return prompt;
+    }
 
-      prompt.prompt()
-        .then(() => prompt.userChoice)
-        .then((choice) => {
-          if (choice.outcome === 'accepted') {
-            this.markInstalled();
-            this.hide(false);
-          } else {
-            this.showInstallGuide(this.getFallbackGuideKey());
-          }
-        })
-        .catch((error) => {
-          console.warn('Install prompt failed:', error);
-          this.showInstallGuide(this.getFallbackGuideKey());
-        })
-        .finally(() => {
-          this.clearPrompt();
-          this.updateInstallButtonState();
-        });
+    return null;
+  }
 
+  handleInstallClick() {
+    if (this.isIOSDevice()) {
+      this.triggerIOSInstall();
       return;
     }
 
-    this.showInstallGuide(this.getFallbackGuideKey());
-  }
+    const prompt = this.getAvailablePrompt();
 
-  getFallbackGuideKey() {
-    if (this.isIOSDevice()) {
-      return 'ios';
+    if (prompt) {
+      this.runNativeInstallPrompt(prompt);
+      return;
+    }
+
+    if (this.isInAppBrowser()) {
+      this.openInSystemBrowser();
+      return;
     }
 
     if (this.isAndroidDevice()) {
-      return 'android';
-    }
-
-    return 'other';
-  }
-
-  showInstallGuide(platformKey) {
-    if (!this.guideEl) {
+      this.beginAndroidInstallReadiness();
       return;
     }
 
-    const message = this.guides[platformKey] || this.guides.other;
-    this.guideEl.textContent = message;
-    this.guideEl.hidden = false;
-    this.banner.classList.add('install-banner--guide-open');
+    this.runNativeInstallPrompt(null);
+  }
 
-    if (this.installButton) {
-      this.installButton.classList.add('is-guide-active');
-      window.setTimeout(() => {
-        this.installButton?.classList.remove('is-guide-active');
-      }, 420);
+  /**
+   * prompt() must be invoked synchronously during the user click.
+   */
+  runNativeInstallPrompt(prompt) {
+    if (!prompt) {
+      this.beginAndroidInstallReadiness();
+      return;
     }
+
+    this.hideGuide();
+    this.setInstallButtonPreparing(false);
+
+    try {
+      prompt.prompt();
+    } catch (error) {
+      console.warn('Install prompt failed:', error);
+      this.beginAndroidInstallReadiness();
+      return;
+    }
+
+    prompt.userChoice
+      .then((choice) => {
+        if (choice.outcome === 'accepted') {
+          this.markInstalled();
+          this.hide(false);
+        }
+      })
+      .catch((error) => {
+        console.warn('Install choice failed:', error);
+      })
+      .finally(() => {
+        this.clearPrompt();
+        this.updateInstallButtonState();
+      });
+  }
+
+  beginAndroidInstallReadiness() {
+    if (this.isPreparingInstall) {
+      return;
+    }
+
+    this.isPreparingInstall = true;
+    this.setInstallButtonPreparing(true);
+
+    if (this.guideEl) {
+      this.guideEl.textContent = 'Starting install…';
+      this.guideEl.hidden = false;
+    }
+
+    const readinessChecks = [500, 1500, 3000, 5000];
+
+    readinessChecks.forEach((delay, index) => {
+      window.setTimeout(() => {
+        if (this.getAvailablePrompt()) {
+          this.isPreparingInstall = false;
+          this.setInstallButtonPreparing(false);
+          this.updateInstallButtonState();
+
+          if (this.guideEl) {
+            this.guideEl.textContent = 'Install is ready — tap Install again.';
+            this.guideEl.hidden = false;
+          }
+
+          return;
+        }
+
+        if (index === readinessChecks.length - 1) {
+          this.isPreparingInstall = false;
+          this.setInstallButtonPreparing(false);
+          this.updateInstallButtonState();
+
+          if (this.guideEl) {
+            this.guideEl.textContent = 'Install is almost ready — tap Install once more.';
+            this.guideEl.hidden = false;
+          }
+        }
+      }, delay);
+    });
+  }
+
+  async triggerIOSInstall() {
+    const shareData = {
+      title: document.title || 'Digital Business Card',
+      text: this.textEl?.textContent || 'Save this card to your home screen.',
+      url: window.location.href.split('#')[0]
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        this.hideGuide();
+        return;
+      } catch (error) {
+        if (error?.name === 'AbortError') {
+          return;
+        }
+      }
+    }
+
+    if (this.guideEl) {
+      this.guideEl.textContent = this.labels.installGuideIOS || 'Tap Share, then Add to Home Screen.';
+      this.guideEl.hidden = false;
+      this.banner.classList.add('install-banner--guide-open');
+    }
+  }
+
+  openInSystemBrowser() {
+    const pageUrl = window.location.href.split('#')[0];
+    const path = `${window.location.pathname}${window.location.search}`;
+
+    if (this.guideEl) {
+      this.guideEl.textContent = 'Opening in Chrome for install…';
+      this.guideEl.hidden = false;
+    }
+
+    window.location.href = `intent://${window.location.host}${path}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(pageUrl)};end`;
+  }
+
+  isInAppBrowser() {
+    const ua = navigator.userAgent || '';
+
+    return (
+      /FBAN|FBAV|Instagram|Line\/|Twitter|WhatsApp|Snapchat|TikTok|LinkedInApp/i.test(ua) ||
+      (/Android/i.test(ua) && /\bwv\b/.test(ua)) ||
+      (/iPhone|iPad|iPod/i.test(ua) && !/Safari/i.test(ua) && /AppleWebKit/i.test(ua))
+    );
+  }
+
+  setInstallButtonPreparing(isPreparing) {
+    if (!this.installButton) {
+      return;
+    }
+
+    this.installButton.classList.toggle('is-preparing', isPreparing);
+    this.installButton.disabled = isPreparing;
+    this.installButton.setAttribute('aria-busy', isPreparing ? 'true' : 'false');
+    this.installButton.textContent = isPreparing
+      ? 'Starting…'
+      : this.defaultInstallLabel;
   }
 
   hideGuide() {
@@ -222,7 +338,6 @@ class InstallBanner {
     this.guideEl.hidden = true;
     this.guideEl.textContent = '';
     this.banner.classList.remove('install-banner--guide-open');
-    this.installButton?.classList.remove('is-guide-active');
   }
 
   clearPrompt() {
@@ -232,7 +347,7 @@ class InstallBanner {
   }
 
   updateInstallButtonState() {
-    if (!this.installButton) {
+    if (!this.installButton || this.isPreparingInstall) {
       return;
     }
 
@@ -240,10 +355,13 @@ class InstallBanner {
 
     this.installButton.hidden = false;
     this.installButton.removeAttribute('hidden');
+    this.installButton.disabled = false;
     this.installButton.classList.toggle('is-ready', canNativeInstall);
+    this.installButton.textContent = this.defaultInstallLabel;
+    this.installButton.setAttribute('aria-busy', 'false');
     this.installButton.setAttribute('aria-label', canNativeInstall
-      ? `${this.installButton.textContent || 'Install'} — ready`
-      : (this.installButton.textContent || 'Install'));
+      ? `${this.defaultInstallLabel} — ready`
+      : this.defaultInstallLabel);
   }
 
   scheduleShowAttempts() {
@@ -369,6 +487,7 @@ class InstallBanner {
   destroy() {
     this.clearShowTimers();
     window.removeEventListener('dbcinstallpromptready', this.handlePromptReady);
+    window.removeEventListener('beforeinstallprompt', this.handlePromptReady);
     window.removeEventListener('dbcserviceworkerready', this.handleServiceWorkerReady);
     window.removeEventListener('appinstalled', this.handleAppInstalled);
     document.removeEventListener('keydown', this.handleKeydown);
