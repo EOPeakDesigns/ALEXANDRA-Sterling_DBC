@@ -7,7 +7,6 @@ const SHOW_ATTEMPT_DELAYS_MS = [800, 2200, 4500];
 
 const INSTALL_GUIDES = {
   ios: 'Tap Share, then Add to Home Screen.',
-  android: 'Tap menu, then Install app.',
   desktop: 'Use your browser menu to install this app.'
 };
 
@@ -36,7 +35,6 @@ class InstallBanner {
     this.labels = {};
 
     this.handleKeydown = this.handleKeydown.bind(this);
-    this.handleBeforeInstallPrompt = this.handleBeforeInstallPrompt.bind(this);
     this.handleAppInstalled = this.handleAppInstalled.bind(this);
     this.handlePromptReady = this.handlePromptReady.bind(this);
 
@@ -66,9 +64,6 @@ class InstallBanner {
       INSTALL_GUIDES.ios = labels.installGuideIOS;
     }
 
-    if (labels.installGuideAndroid) {
-      INSTALL_GUIDES.android = labels.installGuideAndroid;
-    }
   }
 
   initialize() {
@@ -81,7 +76,6 @@ class InstallBanner {
       return;
     }
 
-    window.addEventListener('beforeinstallprompt', this.handleBeforeInstallPrompt);
     window.addEventListener('dbcinstallpromptready', this.handlePromptReady);
     window.addEventListener('appinstalled', this.handleAppInstalled);
 
@@ -115,12 +109,6 @@ class InstallBanner {
     } else {
       window.addEventListener('load', () => this.attemptShow(), { once: true });
     }
-  }
-
-  handleBeforeInstallPrompt(event) {
-    event.preventDefault();
-    window.__dbcInstallPromptEvent = event;
-    this.setDeferredPrompt(event);
   }
 
   handlePromptReady() {
@@ -158,6 +146,10 @@ class InstallBanner {
       return;
     }
 
+    if (this.isAndroidDevice()) {
+      return;
+    }
+
     this.showPlatformGuide();
   }
 
@@ -170,8 +162,6 @@ class InstallBanner {
 
     if (this.isIOSDevice()) {
       message = INSTALL_GUIDES.ios;
-    } else if (this.isAndroidDevice()) {
-      message = INSTALL_GUIDES.android;
     }
 
     this.guideEl.textContent = message;
@@ -259,6 +249,10 @@ class InstallBanner {
       return false;
     }
 
+    if (this.isAndroidDevice()) {
+      return this.promptReceived;
+    }
+
     if (this.isMobileContext()) {
       return true;
     }
@@ -332,7 +326,6 @@ class InstallBanner {
 
   destroy() {
     this.clearShowTimers();
-    window.removeEventListener('beforeinstallprompt', this.handleBeforeInstallPrompt);
     window.removeEventListener('dbcinstallpromptready', this.handlePromptReady);
     window.removeEventListener('appinstalled', this.handleAppInstalled);
     document.removeEventListener('keydown', this.handleKeydown);
