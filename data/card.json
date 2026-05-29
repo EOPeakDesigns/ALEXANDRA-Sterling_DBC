@@ -1,0 +1,50 @@
+{
+  "owner": {
+    "firstName": "ALEXANDRA",
+    "lastName": "Sterling",
+    "fullName": "Alexandra Sterling",
+    "role": "CREATIVE DESIGNER",
+    "bio": "Professional Creative Designer - From Thought to Masterpiece",
+    "slogan": "From Thought to Masterpiece"
+  },
+  "contact": {
+    "phone": "+1 (555) 987-6543",
+    "phoneRaw": "+15559876543",
+    "email": "AlexSterling@gmail.com",
+    "website": "www.creativedesign.studio",
+    "websiteUrl": "https://www.creativedesign.studio",
+    "address": "San Francisco, CA"
+  },
+  "media": {
+    "avatar": "assets/images/Owner.webp",
+    "qrCode": "assets/images/MYQR.png",
+    "showcaseVideo": {
+      "src": "",
+      "embedUrl": "https://www.youtube.com/embed/2Ri8f-wqonE?playsinline=1&rel=0&modestbranding=1",
+      "poster": "assets/images/Owner.webp"
+    }
+  },
+  "social": [
+    { "platform": "instagram", "url": "https://instagram.com/alexsterling_design", "label": "Instagram profile" },
+    { "platform": "facebook", "url": "https://facebook.com/alexsterling.creative", "label": "Facebook profile" },
+    { "platform": "pinterest", "url": "https://pinterest.com/alexsterling_design", "label": "Pinterest profile" },
+    { "platform": "x", "url": "https://x.com/alexsterling_design", "label": "X profile" },
+    { "platform": "behance", "url": "https://behance.net/alexsterling", "label": "Behance profile" },
+    { "platform": "upwork", "url": "https://upwork.com/freelancers/~alexsterling", "label": "Upwork profile" }
+  ],
+  "labels": {
+    "saveContact": "Save Contact",
+    "shareCard": "Share",
+    "saveSuccess": "Contact saved",
+    "shareSuccess": "Link shared",
+    "shareCopied": "Link copied to clipboard",
+    "installApp": "Install App",
+    "installDismiss": "Not now",
+    "skipToContent": "Skip to card content",
+    "showcaseEyebrow": "Studio Moment",
+    "showcaseTitle": "Design in Motion",
+    "showcaseCaption": "Colour, form, and the journey from thought to masterpiece.",
+    "showcasePlay": "Play studio moment",
+    "showcaseClose": "Close video"
+  }
+}

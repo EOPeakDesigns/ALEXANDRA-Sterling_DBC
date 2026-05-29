@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#7FC9C3">
+  <title>Alexandra Sterling - Creative Designer</title>
+  
+  <!-- Favicon and Icons -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon/svg/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon/ico/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon/png/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon/png/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/favicon/png/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/favicon/png/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/favicon/png/android-chrome-512x512.png">
+  <link rel="manifest" href="assets/icons/favicon/site.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Alexandra Sterling">
+  
+  <!-- Meta Tags for Better SEO and Social Sharing -->
+  <meta name="description" content="Alexandra Sterling - Creative Designer. From Thought to Masterpiece. Professional web design and creative services.">
+  <meta name="keywords" content="Alexandra Sterling, Creative Designer, Web Design, UI/UX, Digital Business Card">
+  <meta name="author" content="Alexandra Sterling">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Alexandra Sterling - Creative Designer">
+  <meta property="og:description" content="Professional Creative Designer - From Thought to Masterpiece">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Alexandra Sterling">
+  <meta property="og:image" content="assets/images/Owner.webp">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Alexandra Sterling - Creative Designer">
+  <meta name="twitter:description" content="Professional Creative Designer - From Thought to Masterpiece">
+  <meta name="twitter:image" content="assets/images/Owner.webp">
+  
+  <link rel="canonical" href="/">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/images/Owner.webp" as="image" type="image/webp">
+  
+  <!-- CSS Modules -->
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to card content</a>
+
+  <!-- PWA Install Banner -->
+  <div id="install-banner"
+       class="install-banner"
+       role="dialog"
+       aria-labelledby="install-banner-title"
+       aria-hidden="true"
+       hidden>
+    <div class="install-banner__panel">
+      <div class="install-banner__accent-bar" aria-hidden="true"></div>
+      <button type="button"
+              class="install-banner__close"
+              aria-label="Close install prompt">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+      <div class="install-banner__content">
+        <div class="install-banner__title-row">
+          <span class="install-banner__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M12 12l9-5M12 12v10M12 12L3 7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <h2 id="install-banner-title" class="install-banner__title">Install Card</h2>
+        </div>
+        <p class="install-banner__text">Save this card to your home screen for one-tap access anytime.</p>
+        <p class="install-banner__ios-hint" hidden>
+          Tap <strong>Share</strong> in Safari, then <strong>Add to Home Screen</strong>.
+        </p>
+        <p class="install-banner__android-hint" hidden>
+          Tap <strong>Install</strong> below, or use your browser menu to add to home screen.
+        </p>
+      </div>
+      <div class="install-banner__actions">
+        <button type="button" class="install-banner__action">Install App</button>
+        <button type="button" class="install-banner__dismiss">Not now</button>
+      </div>
+    </div>
+  </div>
+
+  <article id="main-content" class="business-card">
+    <header>
+      <figure class="avatar-container">
+        <!-- Avatar Image -->
+        <img id="avatar" 
+             class="avatar" 
+             src="assets/images/Owner.webp" 
+             alt="Profile photo of Alexandra Sterling" 
+             loading="lazy">
+
+        <!-- Showcase video — bottom-left play trigger -->
+        <button type="button"
+                id="showcase-play-btn"
+                class="showcase-play"
+                aria-label="Play studio moment"
+                aria-haspopup="dialog"
+                aria-controls="video-modal"
+                hidden>
+          <span class="showcase-play__ring" aria-hidden="true"></span>
+          <svg class="showcase-play__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9.5 7.2v9.6c0 .62.67 1.01 1.22.72l7.8-4.56a.85.85 0 000-1.44l-7.8-4.56A.85.85 0 009.5 7.2z" fill="currentColor"/>
+          </svg>
+        </button>
+        
+        <!-- Action Flower: QR · Save · Share -->
+        <div class="action-flower" id="action-flower">
+          <button type="button"
+                  class="action-flower__hub"
+                  aria-expanded="false"
+                  aria-controls="action-flower-petals"
+                  aria-label="Open card actions">
+            <svg class="action-flower__hub-icon action-flower__hub-icon--bud" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.2" fill="white" opacity="0.95"/>
+              <circle cx="7" cy="14" r="3.2" fill="white" opacity="0.85"/>
+              <circle cx="17" cy="14" r="3.2" fill="white" opacity="0.85"/>
+            </svg>
+            <svg class="action-flower__hub-icon action-flower__hub-icon--close" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <div class="action-flower__petals" id="action-flower-petals" role="group" aria-label="Card actions">
+            <button type="button"
+                    class="action-flower__petal action-flower__petal--qr"
+                    aria-label="View QR code"
+                    tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2" y="2" width="6" height="6" rx="0.8" fill="white"/>
+                <rect x="3.5" y="3.5" width="3" height="3" rx="0.4" fill="currentColor"/>
+                <rect x="16" y="2" width="6" height="6" rx="0.8" fill="white"/>
+                <rect x="17.5" y="3.5" width="3" height="3" rx="0.4" fill="currentColor"/>
+                <rect x="2" y="16" width="6" height="6" rx="0.8" fill="white"/>
+                <rect x="3.5" y="17.5" width="3" height="3" rx="0.4" fill="currentColor"/>
+                <rect x="10" y="10" width="1" height="1" fill="white"/>
+                <rect x="14" y="10" width="1" height="1" fill="white"/>
+                <rect x="18" y="10" width="1" height="1" fill="white"/>
+                <rect x="11" y="14" width="1" height="1" fill="white"/>
+                <rect x="16" y="14" width="1" height="1" fill="white"/>
+                <rect x="20" y="14" width="1" height="1" fill="white"/>
+                <rect x="14" y="18" width="1" height="1" fill="white"/>
+                <rect x="18" y="18" width="1" height="1" fill="white"/>
+              </svg>
+            </button>
+
+            <button type="button"
+                    class="action-flower__petal action-flower__petal--save"
+                    aria-label="Save contact"
+                    tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" fill="white"/>
+                <path d="M6 20v-1.2c0-2.21 3.58-4 6-4s6 1.79 6 4V20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <path d="M17 8v5M14.5 10.5H19.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+
+            <button type="button"
+                    class="action-flower__petal action-flower__petal--share"
+                    aria-label="Share card"
+                    tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </figure>
+      
+      <div class="name-section">
+        <h1 class="name">
+          <span class="first-name">ALEXANDRA</span>
+          <span class="last-name">Sterling</span>
+        </h1>
+        <p class="role">CREATIVE DESIGNER</p>
+      </div>
+    </header>
+    
+    <address class="contact-card">
+      <!-- WhatsApp Contact Row -->
+      <div class="contact-row whatsapp-row" 
+           tabindex="0" 
+           role="button"
+           aria-label="Message on WhatsApp">
+        <svg class="contact-icon whatsapp-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+        </svg>
+        <span class="contact-text">+1 (555) 987-6543</span>
+        <div class="contact-row__actions">
+          <a href="tel:+15559876543"
+             class="call-btn"
+             aria-label="Call Alexandra Sterling"
+             title="Call phone number">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button class="copy-btn" 
+                  aria-label="Copy WhatsApp number"
+                  title="Copy WhatsApp number">
+            <svg class="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M8 5H6C4.89543 5 4 5.89543 4 7V19C4 20.1046 4.89543 21 6 21H16C17.1046 21 18 20.1046 18 19V18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 3H19C20.1046 3 21 3.89543 21 5V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 15H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 9H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="checkmark-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Gmail Contact Row -->
+      <div class="contact-row gmail-row" 
+           tabindex="0" 
+           role="button"
+           aria-label="Send email via Gmail">
+        <svg class="contact-icon gmail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819c.904 0 1.636.732 1.636 1.636z"/>
+        </svg>
+        <span class="contact-text">AlexSterling@gmail.com</span>
+        <button class="copy-btn" 
+                aria-label="Copy Gmail address"
+                title="Copy Gmail address">
+          <svg class="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M8 5H6C4.89543 5 4 5.89543 4 7V19C4 20.1046 4.89543 21 6 21H16C17.1046 21 18 20.1046 18 19V18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 3H19C20.1046 3 21 3.89543 21 5V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 15H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 9H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg class="checkmark-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Website Contact Row -->
+      <div class="contact-row website-row" 
+           tabindex="0" 
+           role="button"
+           aria-label="Visit website">
+        <svg class="contact-icon website-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+          <!-- Universal Website Icon - Classic Globe with Grid -->
+          <!-- Outer circle -->
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          
+          <!-- Vertical grid lines -->
+          <line x1="7" y1="4" x2="7" y2="20" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="17" y1="4" x2="17" y2="20" stroke="currentColor" stroke-width="1.2"/>
+          
+          <!-- Horizontal grid lines -->
+          <line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="4" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="1.2"/>
+          
+          <!-- Designer touch: Subtle center dot for visual balance -->
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.6"/>
+        </svg>
+        <span class="contact-text">www.creativedesign.studio</span>
+      </div>
+      
+      <!-- Address Contact Row -->
+      <div class="contact-row location-row" 
+           tabindex="0" 
+           role="button"
+           aria-label="Get directions to San Francisco, CA">
+        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" aria-hidden="true">
+          <path fill="currentColor" d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"></path>
+        </svg>
+        <span class="contact-text">San Francisco, CA</span>
+      </div>
+    </address>
+    
+    <footer class="social-bar">
+      <p class="social-slogan">From Thought to Masterpiece</p>
+      <nav class="social-icons" aria-label="Social Media Links">
+        <!-- Instagram -->
+        <a href="javascript:void(0)" 
+           aria-label="Instagram profile"
+           title="Visit Instagram profile">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white" aria-hidden="true">
+            <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+          </svg>
+        </a>
+        
+        <!-- Facebook -->
+        <a href="javascript:void(0)" 
+           aria-label="Facebook profile"
+           title="Visit Facebook profile">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="white" aria-hidden="true">
+            <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+          </svg>
+        </a>
+        
+        <!-- Pinterest -->
+        <a href="javascript:void(0)" 
+           aria-label="Pinterest profile"
+           title="Visit Pinterest profile">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="white" aria-hidden="true">
+            <path d="M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-24.9 0-46.2-18-46.2-43.8 0-37.8 26.4-74.4 26.4-113.4 0-66.2-93.9-54.2-93.9 25.8 0 16.8 2.1 35.4 9.6 50.7-13.8 59.4-42 147.9-42 209.1 0 18.9 2.7 37.5 4.5 56.4 3.4 3.8 1.7 3.4 6.9 1.5 50.4-69 48.6-82.5 71.4-172.8 12.3 23.4 44.1 36 69.3 36 106.2 0 153.9-103.5 153.9-196.8C384 71.3 298.2 6.5 204 6.5z"></path>
+          </svg>
+        </a>
+        
+        <!-- X (Twitter) -->
+        <a href="javascript:void(0)" 
+           aria-label="X profile"
+           title="Visit X profile">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        
+        <!-- Behance -->
+        <a href="javascript:void(0)" 
+           aria-label="Behance profile"
+           title="Visit Behance profile">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+            <path d="M22 7h-7v-2h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14h-8.027c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.35.782-2.488 2.219zm-9.574 6.988h-6.466v-14.967h6.953c5.476.081 5.58 5.444 2.72 6.906 3.461 1.26 3.577 8.061-3.207 8.061zm-3.466-8.988h3.584c2.508 0 2.906-3-.312-3h-3.272v3zm3.391 3h-3.391v3.016h3.341c3.055 0 2.868-3.016.05-3.016z"/>
+          </svg>
+        </a>
+        
+        <!-- Upwork -->
+        <a href="javascript:void(0)" 
+           aria-label="Upwork profile"
+           title="Visit Upwork profile">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+            <path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.548-1.405-.002-2.543-1.143-2.545-2.548V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303 2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z"/>
+          </svg>
+        </a>
+      </nav>
+    </footer>
+  </article>
+
+  <!-- Owner Showcase Video Modal -->
+  <div id="video-modal" class="modal video-modal" role="dialog" aria-modal="true" aria-labelledby="video-modal-title" aria-describedby="video-modal-caption" aria-hidden="true">
+    <div class="modal-backdrop" aria-hidden="true"></div>
+    <div class="modal-content">
+      <header class="modal-header video-modal__header">
+        <div class="video-modal__heading">
+          <p class="video-modal__eyebrow" id="video-modal-eyebrow">Studio Moment</p>
+          <h2 id="video-modal-title">Design in Motion</h2>
+          <p class="video-modal__caption" id="video-modal-caption">Colour, form, and the journey from thought to masterpiece.</p>
+        </div>
+        <button type="button" class="modal-close video-modal__close" aria-label="Close video">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </header>
+      <div class="modal-body video-modal__body">
+        <div class="video-container">
+          <div class="video-embed">
+            <iframe
+              id="profileVideoFrame"
+              data-src="https://www.youtube.com/embed/2Ri8f-wqonE?playsinline=1&amp;rel=0&amp;modestbranding=1"
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div id="qr-modal" class="modal" role="dialog" aria-labelledby="qr-modal-title" aria-hidden="true">
+    <div class="modal-backdrop" aria-hidden="true"></div>
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2 id="qr-modal-title">QR Code</h2>
+        <button class="modal-close" aria-label="Close modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </header>
+      <div class="modal-body">
+        <div class="qr-code-container">
+          <img src="assets/images/MYQR.png" 
+               alt="QR code for business contact" 
+               class="qr-code-image"
+               loading="lazy">
+        </div>
+        <button class="download-btn" aria-label="Download QR code">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          Download QR Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/utils/clipboard.js"></script>
+  <script src="js/utils/accessibility.js"></script>
+  <script src="js/utils/contactLinks.js"></script>
+  <script src="js/utils/vcard.js"></script>
+  <script src="js/utils/share.js"></script>
+  <script src="js/components/ContactRow.js"></script>
+  <script src="js/components/SocialBar.js"></script>
+  <script src="js/components/QRModal.js"></script>
+  <script src="js/components/VideoModal.js?v=2"></script>
+  <script src="js/components/ActionFlower.js"></script>
+  <script src="js/components/InstallBanner.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

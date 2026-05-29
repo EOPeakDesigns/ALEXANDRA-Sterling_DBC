@@ -1,0 +1,922 @@
+/* 
+==========================================================================
+Comprehensive Responsive Design System
+==========================================================================
+Enterprise-level responsive design covering all screen sizes from 4K to 320px.
+Mobile-first approach with progressive enhancement for larger screens.
+
+Chrome-Specific Fixes: Added !important declarations and enhanced specificity
+to ensure proper business card sizing on all target breakpoints.
+
+Creative Designer Background: Responsive pattern scaling and intensity variations
+for optimal visual impact across all device types and screen sizes.
+==========================================================================
+*/
+
+/* ==========================================================================
+   Creative Designer Background - Responsive Variations
+   ========================================================================== */
+
+/* Mobile S (320px) - Subtle creative designer patterns for small screens */
+@media (max-width: 320px) {
+  .business-card::after {
+    background-size: 24px 24px, 40px 40px, 18px 18px, 12px 12px, 100% 100%;
+    opacity: 0.6; /* Reduce intensity on very small screens */
+  }
+}
+
+/* Mobile M (375px) - Standard creative designer mobile patterns */
+@media (min-width: 321px) and (max-width: 375px) {
+  .business-card::after {
+    background-size: 30px 30px, 50px 50px, 22px 22px, 14px 14px, 100% 100%;
+    opacity: 0.7;
+  }
+}
+
+/* Mobile L (414px) - Enhanced creative designer mobile patterns */
+@media (min-width: 376px) and (max-width: 414px) {
+  .business-card::after {
+    background-size: 36px 36px, 60px 60px, 28px 28px, 18px 18px, 100% 100%;
+    opacity: 0.75;
+  }
+}
+
+/* Tablet (768px) - Medium creative designer pattern density */
+@media (min-width: 415px) and (max-width: 768px) {
+  .business-card::after {
+    background-size: 42px 42px, 70px 70px, 32px 32px, 20px 20px, 100% 100%;
+    opacity: 0.8;
+  }
+}
+
+/* Laptop (1024px) - Full creative designer pattern density */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .business-card::after {
+    background-size: 48px 48px, 80px 80px, 36px 36px, 24px 24px, 100% 100%;
+    opacity: 0.85;
+  }
+}
+
+/* Desktop (1440px) - Enhanced creative designer pattern detail */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .business-card::after {
+    background-size: 54px 54px, 90px 90px, 40px 40px, 28px 28px, 100% 100%;
+    opacity: 0.9;
+  }
+}
+
+/* Large Desktop (1440px+) - Maximum creative designer pattern detail */
+@media (min-width: 1440px) {
+  .business-card::after {
+    background-size: 60px 60px, 100px 100px, 44px 44px, 32px 32px, 100% 100%;
+    opacity: 1;
+  }
+}
+
+/* 4K Displays (2560px+) - Ultra-high resolution creative designer patterns */
+@media (min-width: 2560px) {
+  .business-card::after {
+    background-size: 96px 96px, 160px 160px, 72px 72px, 48px 48px, 100% 100%;
+    opacity: 1;
+  }
+}
+
+/* Chrome-Specific Business Card Sizing Overrides */
+/* These rules ensure Chrome properly applies responsive sizing */
+
+/* Tablet 768px - Chrome Fix */
+@media screen and (min-width: 768px) and (max-width: 768px) {
+  .business-card {
+    max-width: 520px !important;
+    width: 520px !important;
+  }
+}
+
+/* Laptop 1024px - Chrome Fix */
+@media screen and (min-width: 1024px) and (max-width: 1024px) {
+  .business-card {
+    max-width: 620px !important;
+    width: 620px !important;
+  }
+}
+
+/* 4K 2560px - Chrome Fix */
+@media screen and (min-width: 2560px) and (max-width: 2560px) {
+  .business-card {
+    max-width: 950px !important;
+    width: 950px !important;
+  }
+}
+
+/* Chrome-Specific Fallback Rules for Common Issues */
+/* These rules address Chrome-specific rendering problems */
+
+/* Force business card sizing on exact breakpoints */
+@media screen and (width: 768px) {
+  .business-card {
+    max-width: 520px !important;
+    width: 520px !important;
+  }
+}
+
+@media screen and (width: 1024px) {
+  .business-card {
+    max-width: 620px !important;
+    width: 620px !important;
+  }
+}
+
+@media screen and (width: 2560px) {
+  .business-card {
+    max-width: 950px !important;
+    width: 950px !important;
+  }
+}
+
+/* Chrome DevTools Device Emulation Fixes */
+@media screen and (min-width: 768px) and (max-width: 768px) {
+  .business-card {
+    max-width: 520px !important;
+  }
+}
+
+@media screen and (min-width: 1024px) and (max-width: 1024px) {
+  .business-card {
+    max-width: 620px !important;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .business-card {
+    max-width: 950px !important;
+  }
+}
+
+/* ==========================================================================
+   Business Card Responsive System
+   ========================================================================== */
+
+/* Small Mobile - Extra Small Devices (≤320px) */
+@media (max-width: 320px) {
+  .business-card {
+    padding: var(--space-md) var(--space-sm);
+    max-width: 300px;
+    margin: var(--space-sm);
+  }
+
+  .install-banner {
+    right: max(var(--space-sm), env(safe-area-inset-right));
+    bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+    width: min(320px, calc(100vw - var(--space-lg)));
+  }
+
+  .install-banner__panel {
+    width: 100%;
+  }
+
+  .install-banner__action:hover,
+  .install-banner__dismiss:hover,
+  .install-banner__close:hover {
+    transform: none;
+  }
+  
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .avatar-container {
+    width: 100px;
+    height: 100px;
+    margin-bottom: var(--space-md);
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.2rem, 8vw, 1.4rem);
+  }
+  
+  .role {
+    font-size: clamp(0.7rem, 4vw, 0.8rem);
+  }
+  
+  .contact-row {
+    padding: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .contact-text {
+    font-size: clamp(0.7rem, 3.5vw, 0.8rem);
+  }
+}
+
+/* Small Mobile - Standard Mobile Devices (321px-400px) */
+@media (min-width: 321px) and (max-width: 400px) {
+  .business-card {
+    padding: var(--space-lg) var(--space-md);
+    max-width: 360px;
+  }
+  
+  .avatar {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .avatar-container {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.4rem, 7vw, 1.6rem);
+  }
+  
+  .role {
+    font-size: clamp(0.8rem, 4vw, 0.9rem);
+  }
+}
+
+/* Large Mobile - Large Mobile Devices (401px-480px) */
+@media (min-width: 401px) and (max-width: 480px) {
+  .business-card {
+    max-width: 400px;
+    padding: var(--space-xl) var(--space-lg);
+  }
+  
+  .avatar {
+    width: 130px;
+    height: 130px;
+  }
+  
+  .avatar-container {
+    width: 130px;
+    height: 130px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.5rem, 6vw, 1.7rem);
+  }
+  
+  .role {
+    font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+  }
+}
+
+/* Small Tablet - Small Tablet Devices (481px-768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .business-card {
+    max-width: 520px !important;
+    padding: var(--space-xl) var(--space-lg);
+  }
+  
+  .avatar {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .avatar-container {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.7rem, 4.5vw, 1.9rem);
+  }
+  
+  .role {
+    font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+  }
+  
+  .contact-row {
+    padding: var(--space-lg);
+  }
+  
+  .contact-text {
+    font-size: clamp(0.9rem, 2.3vw, 1rem);
+  }
+}
+
+/* Large Tablet - Large Tablet Devices (769px-1023px) */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .business-card {
+    max-width: 580px !important;
+    padding: var(--space-xl) var(--space-lg);
+  }
+  
+  .avatar {
+    width: 170px;
+    height: 170px;
+  }
+  
+  .avatar-container {
+    width: 170px;
+    height: 170px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.8rem, 3.8vw, 2rem);
+  }
+  
+  .role {
+    font-size: clamp(1rem, 2.3vw, 1.1rem);
+  }
+  
+  .contact-row {
+    padding: var(--space-lg);
+  }
+  
+  .contact-text {
+    font-size: clamp(0.95rem, 2.1vw, 1.05rem);
+  }
+}
+
+/* Desktop - Standard Desktop (1024px-1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .business-card {
+    max-width: 620px !important;
+    padding: var(--space-xl) var(--space-xl);
+  }
+  
+  .avatar {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .avatar-container {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.9rem, 3.2vw, 2.1rem);
+  }
+  
+  .role {
+    font-size: clamp(1.05rem, 1.8vw, 1.15rem);
+  }
+  
+  .contact-row {
+    padding: var(--space-lg);
+  }
+  
+  .contact-text {
+    font-size: clamp(1rem, 1.8vw, 1.1rem);
+  }
+}
+
+/* Large Desktop - Large Desktop (1200px-1439px) */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .business-card {
+    max-width: 560px;
+    padding: var(--space-xl) var(--space-xl);
+  }
+  
+  .avatar {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .avatar-container {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(1.9rem, 3vw, 2.1rem);
+  }
+  
+  .role {
+    font-size: clamp(1.05rem, 1.8vw, 1.15rem);
+  }
+  
+  .contact-row {
+    padding: var(--space-lg);
+  }
+  
+  .contact-text {
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  }
+}
+
+/* 2K/QHD - High Resolution Displays (1440px-2559px) */
+@media (min-width: 1440px) and (max-width: 2559px) {
+  .business-card {
+    max-width: 600px;
+    padding: var(--space-xl) var(--space-xl);
+  }
+  
+  .avatar {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .avatar-container {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(2rem, 2.5vw, 2.3rem);
+  }
+  
+  .role {
+    font-size: clamp(1.1rem, 1.5vw, 1.2rem);
+  }
+  
+  .contact-row {
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
+  
+  .contact-text {
+    font-size: clamp(1rem, 1.3vw, 1.1rem);
+  }
+  
+  .social-slogan {
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
+  }
+}
+
+/* 4K/Ultra-wide - Ultra High Resolution Displays (2560px+) */
+@media (min-width: 2560px) {
+  .business-card {
+    max-width: 950px !important;
+    padding: calc(var(--space-xl) * 2) calc(var(--space-xl) * 2);
+  }
+  
+  .avatar {
+    width: 280px;
+    height: 280px;
+  }
+  
+  .avatar-container {
+    width: 280px;
+    height: 280px;
+  }
+  
+  .first-name, .last-name {
+    font-size: clamp(2.5rem, 2.5vw, 3rem);
+  }
+  
+  .role {
+    font-size: clamp(1.3rem, 1.5vw, 1.5rem);
+  }
+  
+  .contact-row {
+    padding: calc(var(--space-lg) * 1.5);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .contact-text {
+    font-size: clamp(1.2rem, 1.3vw, 1.4rem);
+  }
+  
+  .social-slogan {
+    font-size: clamp(1.3rem, 1.5vw, 1.5rem);
+  }
+  
+  .social-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ==========================================================================
+   Social Bar Responsive System
+   ========================================================================== */
+
+/* Mobile and Tablet - Disable hover effects for touch devices */
+@media (max-width: 768px) {
+  .social-icon {
+    transition: none;
+  }
+  
+  .social-icon:hover {
+    transform: none;
+  }
+  
+  /* Optimize social icons for touch devices */
+  .social-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  /* Ensure slogan fits on mobile */
+  .social-slogan {
+    font-size: clamp(0.7rem, 3vw, 0.85rem);
+    letter-spacing: 0.3px;
+  }
+  
+  /* Optimize social icons container for mobile */
+  .social-icons {
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Small mobile screens - Progressive optimization */
+@media (max-width: 375px) {
+  .social-slogan {
+    font-size: clamp(0.65rem, 3.5vw, 0.75rem);
+    letter-spacing: 0.2px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .social-icons {
+    gap: var(--social-gap-optimal); /* 12px - intermediate spacing for optimal 375px experience */
+  }
+  
+  .social-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Ultra small mobile screens - Further optimization */
+@media (max-width: 400px) {
+  .social-slogan {
+    font-size: clamp(0.65rem, 3.5vw, 0.75rem);
+    letter-spacing: 0.2px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .social-icons {
+    gap: var(--space-sm); /* 8px for very small screens */
+  }
+  
+  .social-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* ==========================================================================
+   Contact Button Responsive Behavior
+   ========================================================================== */
+
+/* Disable hover effects on tablet and smaller screens (768px and below) */
+@media (max-width: 768px) {
+  /* Disable contact icon hover effects for touch devices */
+  .contact-icon {
+    transition: none;
+  }
+  
+  .whatsapp-row:hover .whatsapp-icon {
+    color: #25D366; /* Keep original WhatsApp green - no hover effect */
+    transform: none; /* Disable scale effect on touch devices */
+  }
+  
+  .gmail-row:hover .gmail-icon {
+    color: #EA4335; /* Keep original Gmail red - no hover effect */
+    transform: none; /* Disable scale effect on touch devices */
+  }
+  
+  .website-row:hover .website-icon {
+    color: var(--accent-1); /* Keep original accent color - no hover effect */
+    transform: none; /* Disable scale effect on touch devices */
+  }
+  
+  /* Disable contact action button hover effects for touch devices */
+  .call-btn,
+  .copy-btn {
+    transition: none;
+  }
+
+  .call-btn:hover {
+    color: var(--accent-2);
+    background: linear-gradient(145deg, rgba(127, 201, 195, 0.1), rgba(255, 122, 89, 0.1));
+    border-color: transparent;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .copy-btn:hover {
+    color: var(--accent-1);
+    background: linear-gradient(145deg, rgba(127, 201, 195, 0.1), rgba(255, 122, 89, 0.1));
+    border-color: transparent;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .call-btn:hover::before,
+  .copy-btn:hover::before {
+    left: -100%;
+  }
+
+  .call-btn:hover svg,
+  .copy-btn:hover svg {
+    transform: none;
+  }
+
+  .call-btn:active {
+    background: linear-gradient(145deg, rgba(255, 122, 89, 0.22), rgba(127, 201, 195, 0.14));
+    color: var(--accent-4);
+  }
+
+  .copy-btn:active {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Disable action flower hover effects for touch devices */
+  .action-flower__hub,
+  .action-flower__petal {
+    transition: none;
+  }
+
+  .action-flower__hub:hover {
+    background-color: var(--accent-2);
+    transform: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+  }
+
+  .action-flower__hub:active {
+    background-color: var(--accent-4);
+    transform: scale(0.94);
+  }
+
+  .action-flower.is-open .action-flower__hub:active {
+    background-color: var(--accent-3);
+  }
+
+  .action-flower__petal:hover,
+  .action-flower__petal:active {
+    transform: translate(var(--petal-x, 0), var(--petal-y, 0)) scale(1);
+    filter: none;
+  }
+
+  .action-flower__petal:active {
+    filter: brightness(0.92);
+    transform: translate(var(--petal-x, 0), var(--petal-y, 0)) scale(0.94);
+  }
+
+  .showcase-play:hover {
+    background: linear-gradient(145deg, var(--accent-1), #6ab8b2);
+    transform: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+  }
+
+  .showcase-play:active {
+    transform: scale(0.94);
+  }
+}
+
+/* Extra small mobile - Ultra optimization */
+@media (max-width: 320px) {
+  .social-slogan {
+    font-size: clamp(0.6rem, 4vw, 0.7rem);
+    letter-spacing: 0.1px;
+    margin-bottom: 0.4rem;
+  }
+  
+  .social-icons {
+    gap: var(--social-gap-compact); /* 8px - compact but touch-friendly spacing */
+  }
+  
+  .social-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ==========================================================================
+   Modal Responsive System
+   ========================================================================== */
+
+/* Extra Small Mobile - Modal Optimization (≤320px) */
+@media (max-width: 320px) {
+  .modal-content {
+    width: 95%;
+    margin: var(--space-sm);
+    max-width: 280px;
+  }
+  
+  .modal-body {
+    padding: var(--space-md);
+  }
+  
+  .qr-code-image {
+    max-width: 120px;
+  }
+
+  .action-flower {
+    --flower-petal-distance: 46px;
+  }
+
+  .showcase-play {
+    --showcase-size: 40px;
+    bottom: 2px;
+    left: 2px;
+  }
+
+  .showcase-play__icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .download-btn {
+    font-size: clamp(0.8rem, 4vw, 0.9rem);
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
+/* Small Mobile - Modal Optimization (321px-400px) */
+@media (min-width: 321px) and (max-width: 400px) {
+  .modal-content {
+    width: 95%;
+    margin: var(--space-md);
+    max-width: 340px;
+  }
+  
+  .modal-body {
+    padding: var(--space-lg);
+  }
+  
+  .qr-code-image {
+    max-width: 150px;
+  }
+  .download-btn {
+    font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+    padding: var(--space-md) var(--space-lg);
+  }
+}
+
+/* Large Mobile - Modal Optimization (401px-480px) */
+@media (min-width: 401px) and (max-width: 480px) {
+  .modal-content {
+    max-width: 380px;
+  }
+  
+  .qr-code-image {
+    max-width: 180px;
+  }
+  
+}
+
+/* Small Tablet - Modal Optimization (481px-768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .modal-content {
+    max-width: 480px;
+  }
+  
+  .qr-code-image {
+    max-width: 220px;
+  }
+  
+}
+
+/* Large Tablet - Modal Optimization (769px-1023px) */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .modal-content {
+    max-width: 520px;
+  }
+  
+  .qr-code-image {
+    max-width: 240px;
+  }
+  
+}
+
+/* Desktop - Modal Optimization (1024px-1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .modal-content {
+    max-width: 580px;
+  }
+  
+  .qr-code-image {
+    max-width: 260px;
+  }
+  
+}
+
+/* Large Desktop - Modal Optimization (1200px-1439px) */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .modal-content {
+    max-width: 520px;
+  }
+  
+  .qr-code-image {
+    max-width: 260px;
+  }
+  
+  .download-btn {
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
+    padding: var(--space-lg) var(--space-xl);
+  }
+}
+
+/* 2K/QHD - Modal Optimization (1440px-2559px) */
+@media (min-width: 1440px) and (max-width: 2559px) {
+  .modal-content {
+    max-width: 580px;
+  }
+  
+  .qr-code-image {
+    max-width: 300px;
+  }
+  
+  .download-btn {
+    font-size: clamp(1.1rem, 1.3vw, 1.2rem);
+    padding: calc(var(--space-lg) * 1.2) calc(var(--space-xl) * 1.2);
+  }
+}
+
+/* 4K/Ultra-wide - Modal Optimization (2560px+) */
+@media (min-width: 2560px) {
+  .modal-content {
+    max-width: 900px;
+  }
+  
+  .qr-code-image {
+    max-width: 420px;
+  }
+  
+  .action-flower {
+    --flower-size: 50px;
+    --flower-petal-distance: 62px;
+  }
+
+  .action-flower__hub-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .action-flower__petal svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .download-btn {
+    font-size: clamp(1.4rem, 1.4vw, 1.5rem);
+    padding: calc(var(--space-lg) * 2) calc(var(--space-xl) * 2);
+  }
+}
+
+/* ==========================================================================
+   Showcase Play + Video Modal Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .video-modal .modal-content {
+    width: min(94vw, 420px);
+    max-height: min(90dvh, 90vh);
+    overflow-y: auto;
+  }
+
+  .video-embed {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 320px) {
+  .video-modal .modal-content {
+    width: 96%;
+    max-width: none;
+  }
+
+  .video-modal__header {
+    padding: var(--space-md);
+  }
+
+  .video-modal__body {
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+  }
+
+  .video-modal__caption {
+    font-size: 0.78rem;
+    max-width: none;
+  }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+  .video-modal .modal-content {
+    max-width: min(94vw, 420px);
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .video-modal .modal-content {
+    max-width: min(92vw, 560px);
+  }
+}
+
+@media (min-width: 769px) {
+  .video-modal .modal-content {
+    max-width: min(90vw, 680px);
+  }
+}
+
+@media (min-width: 2560px) {
+  .showcase-play {
+    --showcase-size: 50px;
+  }
+
+  .showcase-play__icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .video-modal .modal-content {
+    max-width: 900px;
+  }
+}

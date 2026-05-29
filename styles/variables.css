@@ -1,0 +1,103 @@
+/* 
+==========================================================================
+CSS Variables - Theme System
+==========================================================================
+Central theme configuration for the digital business card.
+Modify these variables to customize colors, typography, and spacing.
+==========================================================================
+*/
+
+:root {
+  /* Color Palette - Enhanced Creative Designer Theme */
+  --bg1: #FFF0EC;
+  --bg2: #FDE2DA;
+  --bg3: #F8F4F0; /* Additional warm tone for depth */
+  --bg4: #F0E6E1; /* Subtle contrast layer */
+  --accent-1: #7FC9C3; /* Teal for first name */
+  --accent-2: #FF7A59; /* Coral for surname & social bar */
+  --accent-3: #6BB6B0; /* Deeper teal for shadows */
+  --accent-4: #E85D47; /* Deeper coral for highlights */
+  --card-bg: #ffffff;
+  --text: #4A4A4A;
+  --muted: #8D8D8D;
+  
+  /* Creative Designer Background Colors - Enhanced for Design Profession */
+  --designer-bg-primary: linear-gradient(135deg, #FFF0EC 0%, #FDE2DA 25%, #F8F4F0 50%, #F0E6E1 75%, #FFF0EC 100%);
+  --designer-bg-secondary: linear-gradient(45deg, rgba(127, 201, 195, 0.08) 0%, rgba(255, 122, 89, 0.06) 50%, rgba(127, 201, 195, 0.04) 100%);
+  --designer-bg-pattern: linear-gradient(30deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+  
+  /* Creative Designer Tool Patterns - Design Profession Specific */
+  --paintbrush-strokes: 
+    repeating-linear-gradient(
+      15deg,
+      transparent 0px,
+      transparent 12px,
+      rgba(127, 201, 195, 0.08) 12px,
+      rgba(127, 201, 195, 0.08) 16px,
+      transparent 16px,
+      transparent 28px
+    );
+  --pencil-sketches:
+    repeating-linear-gradient(
+      -25deg,
+      transparent 0px,
+      transparent 8px,
+      rgba(255, 122, 89, 0.06) 8px,
+      rgba(255, 122, 89, 0.06) 10px,
+      transparent 10px,
+      transparent 18px
+    );
+  --color-palette-dots:
+    radial-gradient(circle at 20% 20%, rgba(127, 201, 195, 0.12) 2px, transparent 2px),
+    radial-gradient(circle at 60% 40%, rgba(255, 122, 89, 0.1) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 80% 70%, rgba(127, 201, 195, 0.08) 1px, transparent 1px);
+  --design-grid-lines:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 24px,
+      rgba(255, 255, 255, 0.04) 24px,
+      rgba(255, 255, 255, 0.04) 25px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 24px,
+      rgba(255, 255, 255, 0.04) 24px,
+      rgba(255, 255, 255, 0.04) 25px
+    );
+  
+  /* Typography */
+  --font-primary: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-script: 'Pacifico', cursive, serif;
+  
+  /* System font alternatives if Google Fonts not preferred */
+  --system-primary: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --system-script: cursive, serif;
+  
+  /* Spacing System */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  
+  /* Social Icons Progressive Spacing */
+  --social-gap-compact: 0.5rem;  /* 8px for ultra-small screens */
+  --social-gap-optimal: 0.75rem; /* 12px for optimal mobile experience */
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 24px;
+  
+  /* Shadows */
+  --shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.15);
+  
+  /* Transitions */
+  --transition-fast: 0.18s ease;
+  --transition-normal: 0.3s ease;
+}

@@ -1,0 +1,125 @@
+/* 
+==========================================================================
+Base Styles - Reset and Foundation
+==========================================================================
+Global reset styles and base typography for the business card application.
+==========================================================================
+*/
+
+/* Reset and Box Model */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Body and Layout */
+body {
+  font-family: var(--font-primary);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding:
+    max(var(--space-md), env(safe-area-inset-top))
+    max(var(--space-md), env(safe-area-inset-right))
+    max(var(--space-md), env(safe-area-inset-bottom))
+    max(var(--space-md), env(safe-area-inset-left));
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-md);
+  z-index: 2000;
+  background-color: var(--accent-2);
+  color: #fff;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: max(var(--space-md), env(safe-area-inset-top));
+  outline: 2px solid var(--accent-1);
+  outline-offset: 2px;
+}
+
+/* Focus States for Accessibility */
+a:focus,
+button:focus {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+
+.action-flower__hub,
+.action-flower__petal {
+  outline: none !important;
+}
+
+.action-flower__hub:focus,
+.action-flower__hub:focus-visible,
+.action-flower__petal:focus,
+.action-flower__petal:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+.call-btn:focus,
+.call-btn:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Disable creative designer background animation for users who prefer reduced motion */
+  .business-card::after {
+    animation: none !important;
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0% !important;
+  }
+  
+  /* Also disable modal creative designer animation */
+  .modal-content::after {
+    animation: none !important;
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0% !important;
+  }
+
+  .action-flower__hub,
+  .action-flower__petal,
+  .action-flower__hub-icon {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .action-flower.is-open .action-flower__petal--qr,
+  .action-flower.is-open .action-flower__petal--save,
+  .action-flower.is-open .action-flower__petal--share {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
