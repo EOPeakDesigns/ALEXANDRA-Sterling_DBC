@@ -110,7 +110,8 @@ class BusinessCardApp {
       installText: 'One-tap access anytime.',
       installApp: 'Install',
       installDismiss: 'Not now',
-      installGuideIOS: 'Tap Share, then Add to Home Screen.'
+      installGuideIOS: 'Tap Share, then Add to Home Screen.',
+      installGuideAndroid: 'Tap the menu (⋮), then Install app.'
     });
   }
 

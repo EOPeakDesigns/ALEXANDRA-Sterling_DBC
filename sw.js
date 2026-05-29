@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dbc-v2';
+const CACHE_VERSION = 'dbc-v3';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
