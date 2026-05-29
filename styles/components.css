@@ -634,6 +634,11 @@ Each component is self-contained and reusable.
   transform: scale(0.97);
 }
 
+.install-banner__action.is-waiting {
+  opacity: 0.82;
+  pointer-events: none;
+}
+
 .install-banner__dismiss {
   flex: 0.85;
   background: rgba(255, 255, 255, 0.82);
@@ -1062,18 +1067,17 @@ Each component is self-contained and reusable.
   color: white;
   position: relative;
   z-index: 10; /* Ensure social bar appears above background layers */
+  overflow: hidden;
 }
 
 .social-slogan {
   font-size: clamp(0.75rem, 2.5vw, 1rem);
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
   letter-spacing: 0.5px;
   color: white;
   text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.35;
   max-width: 100%;
 }
 
@@ -1083,22 +1087,38 @@ Each component is self-contained and reusable.
 }
 
 .social-icons {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: clamp(0.25rem, 1.6vw, 1rem);
+  width: 100%;
+  max-width: 100%;
 }
 
 .social-icons a {
-  min-width: 44px;
-  min-height: 44px;
+  width: 100%;
+  max-width: 44px;
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.social-icons a:active {
+  background-color: rgba(255, 255, 255, 0.14);
+  transform: scale(0.94);
 }
 
 .social-icon {
-  width: 24px;
-  height: 24px;
+  width: clamp(18px, 4.8vw, 24px);
+  height: clamp(18px, 4.8vw, 24px);
+  flex-shrink: 0;
   transition: transform var(--transition-fast);
   cursor: pointer;
 }

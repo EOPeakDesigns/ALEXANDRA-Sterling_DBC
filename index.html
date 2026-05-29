@@ -15,6 +15,19 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/favicon/png/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/favicon/png/android-chrome-512x512.png">
   <link rel="manifest" href="/assets/icons/favicon/site.webmanifest">
+  <script>
+    window.__dbcInstallPromptEvent = null;
+    window.addEventListener('beforeinstallprompt', function(event) {
+      event.preventDefault();
+      window.__dbcInstallPromptEvent = event;
+      window.dispatchEvent(new CustomEvent('dbcinstallpromptready'));
+    });
+    if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+      window.addEventListener('DOMContentLoaded', function() {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function() {});
+      });
+    }
+  </script>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -419,7 +432,7 @@
   <script src="js/components/QRModal.js"></script>
   <script src="js/components/VideoModal.js?v=2"></script>
   <script src="js/components/ActionFlower.js"></script>
-  <script src="js/components/InstallBanner.js?v=5"></script>
+  <script src="js/components/InstallBanner.js?v=6"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

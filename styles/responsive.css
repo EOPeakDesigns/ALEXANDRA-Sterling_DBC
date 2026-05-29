@@ -488,6 +488,10 @@ for optimal visual impact across all device types and screen sizes.
 
 /* Mobile and Tablet - Disable hover effects for touch devices */
 @media (max-width: 768px) {
+  .social-bar {
+    padding: var(--space-sm) var(--space-sm) var(--space-md);
+  }
+
   .social-icon {
     transition: none;
   }
@@ -495,60 +499,42 @@ for optimal visual impact across all device types and screen sizes.
   .social-icon:hover {
     transform: none;
   }
-  
-  /* Optimize social icons for touch devices */
-  .social-icon {
-    width: 28px;
-    height: 28px;
-  }
-  
-  /* Ensure slogan fits on mobile */
+
   .social-slogan {
-    font-size: clamp(0.7rem, 3vw, 0.85rem);
-    letter-spacing: 0.3px;
+    font-size: clamp(0.68rem, 2.8vw, 0.82rem);
+    letter-spacing: 0.28px;
+    margin-bottom: 0.55rem;
   }
-  
-  /* Optimize social icons container for mobile */
+
   .social-icons {
-    gap: var(--space-md);
-    flex-wrap: wrap;
-    justify-content: center;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.15rem, 1.2vw, 0.5rem);
+  }
+
+  .social-icons a {
+    max-width: 40px;
+    min-height: 40px;
   }
 }
 
 /* Small mobile screens - Progressive optimization */
 @media (max-width: 375px) {
   .social-slogan {
-    font-size: clamp(0.65rem, 3.5vw, 0.75rem);
-    letter-spacing: 0.2px;
-    margin-bottom: 0.5rem;
+    font-size: clamp(0.62rem, 3vw, 0.72rem);
+    letter-spacing: 0.18px;
+    margin-bottom: 0.45rem;
   }
-  
-  .social-icons {
-    gap: var(--social-gap-optimal); /* 12px - intermediate spacing for optimal 375px experience */
-  }
-  
-  .social-icon {
-    width: 26px;
-    height: 26px;
+
+  .social-icons a {
+    max-width: 36px;
+    min-height: 36px;
   }
 }
 
 /* Ultra small mobile screens - Further optimization */
 @media (max-width: 400px) {
-  .social-slogan {
-    font-size: clamp(0.65rem, 3.5vw, 0.75rem);
-    letter-spacing: 0.2px;
-    margin-bottom: 0.5rem;
-  }
-  
   .social-icons {
-    gap: var(--space-sm); /* 8px for very small screens */
-  }
-  
-  .social-icon {
-    width: 26px;
-    height: 26px;
+    gap: clamp(0.1rem, 1vw, 0.35rem);
   }
 }
 
@@ -666,18 +652,18 @@ for optimal visual impact across all device types and screen sizes.
 /* Extra small mobile - Ultra optimization */
 @media (max-width: 320px) {
   .social-slogan {
-    font-size: clamp(0.6rem, 4vw, 0.7rem);
-    letter-spacing: 0.1px;
+    font-size: clamp(0.58rem, 3.2vw, 0.66rem);
+    letter-spacing: 0.12px;
     margin-bottom: 0.4rem;
   }
-  
+
   .social-icons {
-    gap: var(--social-gap-compact); /* 8px - compact but touch-friendly spacing */
+    gap: 0.125rem;
   }
-  
-  .social-icon {
-    width: 24px;
-    height: 24px;
+
+  .social-icons a {
+    max-width: 34px;
+    min-height: 34px;
   }
 }
 
