@@ -439,11 +439,26 @@ function registerServiceWorker() {
     return;
   }
 
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((error) => {
+  const register = () => {
+    if (registerServiceWorker.started) {
+      return;
+    }
+
+    registerServiceWorker.started = true;
+
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(() => navigator.serviceWorker.ready).then(() => {
+      window.dispatchEvent(new CustomEvent('dbcserviceworkerready'));
+    }).catch((error) => {
       console.warn('Service worker registration failed:', error);
     });
-  });
+  };
+
+  if (document.readyState === 'complete') {
+    register();
+  } else {
+    register();
+    window.addEventListener('load', register, { once: true });
+  }
 }
 
 function initializeApp() {

@@ -11,6 +11,14 @@ const INSTALL_GUIDES = {
   desktop: 'Use your browser menu to install this app.'
 };
 
+window.__dbcInstallPromptEvent = window.__dbcInstallPromptEvent || null;
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  window.__dbcInstallPromptEvent = event;
+  window.dispatchEvent(new CustomEvent('dbcinstallpromptready'));
+});
+
 class InstallBanner {
   constructor(element) {
     this.banner = element;
@@ -30,6 +38,7 @@ class InstallBanner {
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handleBeforeInstallPrompt = this.handleBeforeInstallPrompt.bind(this);
     this.handleAppInstalled = this.handleAppInstalled.bind(this);
+    this.handlePromptReady = this.handlePromptReady.bind(this);
 
     this.initialize();
   }
@@ -73,7 +82,12 @@ class InstallBanner {
     }
 
     window.addEventListener('beforeinstallprompt', this.handleBeforeInstallPrompt);
+    window.addEventListener('dbcinstallpromptready', this.handlePromptReady);
     window.addEventListener('appinstalled', this.handleAppInstalled);
+
+    if (window.__dbcInstallPromptEvent) {
+      this.setDeferredPrompt(window.__dbcInstallPromptEvent);
+    }
 
     this.closeButton?.addEventListener('click', (event) => {
       event.preventDefault();
@@ -105,6 +119,17 @@ class InstallBanner {
 
   handleBeforeInstallPrompt(event) {
     event.preventDefault();
+    window.__dbcInstallPromptEvent = event;
+    this.setDeferredPrompt(event);
+  }
+
+  handlePromptReady() {
+    if (window.__dbcInstallPromptEvent) {
+      this.setDeferredPrompt(window.__dbcInstallPromptEvent);
+    }
+  }
+
+  setDeferredPrompt(event) {
     this.deferredPrompt = event;
     this.promptReceived = true;
     this.hideGuide();
@@ -128,6 +153,7 @@ class InstallBanner {
       }
 
       this.deferredPrompt = null;
+      window.__dbcInstallPromptEvent = null;
       this.hide(false);
       return;
     }
@@ -307,6 +333,7 @@ class InstallBanner {
   destroy() {
     this.clearShowTimers();
     window.removeEventListener('beforeinstallprompt', this.handleBeforeInstallPrompt);
+    window.removeEventListener('dbcinstallpromptready', this.handlePromptReady);
     window.removeEventListener('appinstalled', this.handleAppInstalled);
     document.removeEventListener('keydown', this.handleKeydown);
   }
