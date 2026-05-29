@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/favicon/png/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/favicon/png/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/favicon/png/android-chrome-512x512.png">
-  <link rel="manifest" href="/assets/icons/favicon/site.webmanifest">
+  <link rel="manifest" href="/manifest.webmanifest">
   <script>
     window.__dbcInstallPromptEvent = null;
     window.addEventListener('beforeinstallprompt', function(event) {
@@ -24,7 +24,12 @@
     });
     if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
       window.addEventListener('DOMContentLoaded', function() {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function() {});
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(function() { return navigator.serviceWorker.ready; })
+          .then(function() {
+            window.dispatchEvent(new CustomEvent('dbcserviceworkerready'));
+          })
+          .catch(function() {});
       });
     }
   </script>
@@ -432,7 +437,7 @@
   <script src="js/components/QRModal.js"></script>
   <script src="js/components/VideoModal.js?v=2"></script>
   <script src="js/components/ActionFlower.js"></script>
-  <script src="js/components/InstallBanner.js?v=6"></script>
+  <script src="js/components/InstallBanner.js?v=7"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

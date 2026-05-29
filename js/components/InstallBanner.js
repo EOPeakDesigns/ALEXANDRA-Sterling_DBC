@@ -4,11 +4,11 @@
 
 const INSTALL_INSTALLED_KEY = 'dbc-install-installed-v5';
 const SHOW_ATTEMPT_DELAYS_MS = [600, 1800, 3500, 6000];
-const PROMPT_WAIT_MS = 5000;
 
-const INSTALL_GUIDES = {
+const DEFAULT_INSTALL_GUIDES = {
   ios: 'Tap Share, then Add to Home Screen.',
-  desktop: 'Use your browser menu to install this app.'
+  android: 'Tap menu, then Install app.',
+  other: 'Use your browser menu to add this card to your home screen.'
 };
 
 class InstallBanner {
@@ -25,6 +25,7 @@ class InstallBanner {
     this.isVisible = false;
     this.closedForCurrentPage = false;
     this.showTimers = [];
+    this.guides = { ...DEFAULT_INSTALL_GUIDES };
     this.labels = {};
 
     this.handleKeydown = this.handleKeydown.bind(this);
@@ -55,7 +56,15 @@ class InstallBanner {
     }
 
     if (labels.installGuideIOS) {
-      INSTALL_GUIDES.ios = labels.installGuideIOS;
+      this.guides.ios = labels.installGuideIOS;
+    }
+
+    if (labels.installGuideAndroid) {
+      this.guides.android = labels.installGuideAndroid;
+    }
+
+    if (labels.installGuideOther) {
+      this.guides.other = labels.installGuideOther;
     }
   }
 
@@ -87,10 +96,10 @@ class InstallBanner {
       this.closeForNow();
     });
 
-    this.installButton?.addEventListener('click', async (event) => {
+    this.installButton?.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      await this.handleInstallClick();
+      this.handleInstallClick();
     });
 
     this.updateInstallButtonState();
@@ -131,134 +140,78 @@ class InstallBanner {
   }
 
   handleAppInstalled() {
-    this.deferredPrompt = null;
-    window.__dbcInstallPromptEvent = null;
+    this.clearPrompt();
     this.markInstalled();
     this.hide(false);
   }
 
-  async handleInstallClick() {
+  getAvailablePrompt() {
+    return this.deferredPrompt || window.__dbcInstallPromptEvent || null;
+  }
+
+  /**
+   * Must call prompt() synchronously inside the click handler
+   * or Android Chrome will block the native install dialog.
+   */
+  handleInstallClick() {
+    const prompt = this.getAvailablePrompt();
+
+    if (prompt && typeof prompt.prompt === 'function') {
+      this.hideGuide();
+
+      prompt.prompt()
+        .then(() => prompt.userChoice)
+        .then((choice) => {
+          if (choice.outcome === 'accepted') {
+            this.markInstalled();
+            this.hide(false);
+          } else {
+            this.showInstallGuide(this.getFallbackGuideKey());
+          }
+        })
+        .catch((error) => {
+          console.warn('Install prompt failed:', error);
+          this.showInstallGuide(this.getFallbackGuideKey());
+        })
+        .finally(() => {
+          this.clearPrompt();
+          this.updateInstallButtonState();
+        });
+
+      return;
+    }
+
+    this.showInstallGuide(this.getFallbackGuideKey());
+  }
+
+  getFallbackGuideKey() {
     if (this.isIOSDevice()) {
-      this.showPlatformGuide();
-      return;
-    }
-
-    const prompt = await this.resolveInstallPrompt();
-
-    if (!prompt) {
-      return;
-    }
-
-    try {
-      await prompt.prompt();
-      const choice = await prompt.userChoice;
-
-      if (choice.outcome === 'accepted') {
-        this.markInstalled();
-      }
-    } catch (error) {
-      console.warn('Install prompt failed:', error);
-    }
-
-    this.deferredPrompt = null;
-    window.__dbcInstallPromptEvent = null;
-    this.promptReceived = false;
-    this.updateInstallButtonState();
-    this.hide(false);
-  }
-
-  async resolveInstallPrompt() {
-    if (this.deferredPrompt) {
-      return this.deferredPrompt;
-    }
-
-    if (window.__dbcInstallPromptEvent) {
-      this.setDeferredPrompt(window.__dbcInstallPromptEvent);
-      return this.deferredPrompt;
-    }
-
-    if (!this.isAndroidDevice()) {
-      return null;
-    }
-
-    this.setInstallButtonWaiting(true);
-
-    const prompt = await new Promise((resolve) => {
-      let settled = false;
-
-      const finish = (value) => {
-        if (settled) {
-          return;
-        }
-        settled = true;
-        window.removeEventListener('dbcinstallpromptready', onReady);
-        window.clearTimeout(timer);
-        resolve(value);
-      };
-
-      const onReady = () => {
-        finish(window.__dbcInstallPromptEvent || null);
-      };
-
-      const timer = window.setTimeout(() => finish(null), PROMPT_WAIT_MS);
-      window.addEventListener('dbcinstallpromptready', onReady);
-
-      if (window.__dbcInstallPromptEvent) {
-        finish(window.__dbcInstallPromptEvent);
-      }
-    });
-
-    this.setInstallButtonWaiting(false);
-
-    if (prompt) {
-      this.setDeferredPrompt(prompt);
-      return prompt;
-    }
-
-    return null;
-  }
-
-  setInstallButtonWaiting(isWaiting) {
-    if (!this.installButton) {
-      return;
-    }
-
-    this.installButton.classList.toggle('is-waiting', isWaiting);
-    this.installButton.setAttribute('aria-busy', isWaiting ? 'true' : 'false');
-  }
-
-  updateInstallButtonState() {
-    if (!this.installButton) {
-      return;
-    }
-
-    const canNativeInstall = Boolean(this.deferredPrompt || window.__dbcInstallPromptEvent);
-
-    if (this.isIOSDevice()) {
-      this.installButton.hidden = false;
-      this.installButton.removeAttribute('hidden');
-      this.installButton.removeAttribute('aria-disabled');
-      return;
+      return 'ios';
     }
 
     if (this.isAndroidDevice()) {
-      this.installButton.hidden = false;
-      this.installButton.removeAttribute('hidden');
-      this.installButton.setAttribute('aria-disabled', canNativeInstall ? 'false' : 'false');
-      return;
+      return 'android';
     }
 
-    this.installButton.hidden = !canNativeInstall;
+    return 'other';
   }
 
-  showPlatformGuide() {
-    if (!this.guideEl || !this.isIOSDevice()) {
+  showInstallGuide(platformKey) {
+    if (!this.guideEl) {
       return;
     }
 
-    this.guideEl.textContent = INSTALL_GUIDES.ios;
+    const message = this.guides[platformKey] || this.guides.other;
+    this.guideEl.textContent = message;
     this.guideEl.hidden = false;
     this.banner.classList.add('install-banner--guide-open');
+
+    if (this.installButton) {
+      this.installButton.classList.add('is-guide-active');
+      window.setTimeout(() => {
+        this.installButton?.classList.remove('is-guide-active');
+      }, 420);
+    }
   }
 
   hideGuide() {
@@ -269,6 +222,28 @@ class InstallBanner {
     this.guideEl.hidden = true;
     this.guideEl.textContent = '';
     this.banner.classList.remove('install-banner--guide-open');
+    this.installButton?.classList.remove('is-guide-active');
+  }
+
+  clearPrompt() {
+    this.deferredPrompt = null;
+    this.promptReceived = false;
+    window.__dbcInstallPromptEvent = null;
+  }
+
+  updateInstallButtonState() {
+    if (!this.installButton) {
+      return;
+    }
+
+    const canNativeInstall = Boolean(this.getAvailablePrompt());
+
+    this.installButton.hidden = false;
+    this.installButton.removeAttribute('hidden');
+    this.installButton.classList.toggle('is-ready', canNativeInstall);
+    this.installButton.setAttribute('aria-label', canNativeInstall
+      ? `${this.installButton.textContent || 'Install'} — ready`
+      : (this.installButton.textContent || 'Install'));
   }
 
   scheduleShowAttempts() {

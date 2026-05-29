@@ -130,12 +130,23 @@ Each component is self-contained and reusable.
    Avatar Component
    ========================================================================== */
 .avatar-container {
+  --avatar-size: 140px;
+  --avatar-ring: clamp(4px, calc(var(--avatar-size) * 0.057), 8px);
+  --avatar-control-size: clamp(32px, calc(var(--avatar-size) * 0.30), 46px);
+  --avatar-control-inset: clamp(1px, calc(var(--avatar-size) * 0.02), 5px);
+  --avatar-control-border: clamp(1.5px, calc(var(--avatar-size) * 0.014), 2px);
+  --avatar-control-icon: clamp(16px, calc(var(--avatar-control-size) * 0.46), 22px);
+  --flower-petal-distance: clamp(36px, calc(var(--avatar-size) * 0.38), 56px);
+  --avatar-control-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
   margin: 0 auto var(--space-lg);
   z-index: 10;
   overflow: visible;
+  flex-shrink: 0;
+  transition: margin-bottom 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
 .avatar-container.action-flower-open {
@@ -143,10 +154,11 @@ Each component is self-contained and reusable.
 }
 
 .avatar {
-  width: 140px;
-  height: 140px;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  border: 8px solid #fff;
+  border: var(--avatar-ring) solid #fff;
   object-fit: cover;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
   background-color: #e0e0e0;
@@ -158,16 +170,16 @@ Each component is self-contained and reusable.
    Showcase Play — bottom-left avatar trigger
    ========================================================================== */
 .showcase-play {
-  --showcase-size: 44px;
+  --showcase-size: var(--avatar-control-size);
 
   position: absolute;
-  bottom: 4px;
-  left: 4px;
+  bottom: var(--avatar-control-inset);
+  left: var(--avatar-control-inset);
   width: var(--showcase-size);
   height: var(--showcase-size);
   min-width: var(--showcase-size);
   min-height: var(--showcase-size);
-  border: 2px solid #fff;
+  border: var(--avatar-control-border) solid #fff;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -177,8 +189,9 @@ Each component is self-contained and reusable.
   z-index: 26;
   background: linear-gradient(145deg, var(--accent-1), #6ab8b2);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--avatar-control-shadow);
   outline: none;
+  touch-action: manipulation;
   transition:
     transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
     background 0.22s ease,
@@ -189,18 +202,18 @@ Each component is self-contained and reusable.
 
 .showcase-play__ring {
   position: absolute;
-  inset: -4px;
+  inset: clamp(-3px, calc(var(--avatar-control-size) * -0.09), -4px);
   border-radius: 50%;
-  border: 2px solid rgba(127, 201, 195, 0.55);
+  border: clamp(1px, calc(var(--avatar-control-border) * 0.85), 2px) solid rgba(127, 201, 195, 0.5);
   pointer-events: none;
   animation: showcasePlayPulse 2.6s ease-in-out infinite;
 }
 
 .showcase-play__icon {
   position: relative;
-  width: 20px;
-  height: 20px;
-  margin-left: 2px;
+  width: var(--avatar-control-icon);
+  height: var(--avatar-control-icon);
+  margin-left: clamp(1px, calc(var(--avatar-control-icon) * 0.08), 2px);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 }
 
@@ -236,7 +249,7 @@ Each component is self-contained and reusable.
 .showcase-play.is-cooldown:active {
   background: linear-gradient(145deg, var(--accent-1), #6ab8b2) !important;
   transform: none !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16) !important;
+  box-shadow: var(--avatar-control-shadow) !important;
   outline: none !important;
 }
 
@@ -244,7 +257,7 @@ Each component is self-contained and reusable.
   .showcase-play:hover {
     background: linear-gradient(145deg, var(--accent-1), #6ab8b2);
     transform: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+    box-shadow: var(--avatar-control-shadow);
   }
 }
 
@@ -252,14 +265,13 @@ Each component is self-contained and reusable.
    Action Flower — QR · Save · Share
    ========================================================================== */
 .action-flower {
-  --flower-size: 44px;
-  --flower-petal-distance: 54px;
+  --flower-size: var(--avatar-control-size);
   --flower-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --flower-spring-out: cubic-bezier(0.55, 0.06, 0.44, 0.96);
 
   position: absolute;
-  bottom: 4px;
-  right: 4px;
+  bottom: var(--avatar-control-inset);
+  right: var(--avatar-control-inset);
   width: var(--flower-size);
   height: var(--flower-size);
   z-index: 25;
@@ -274,15 +286,16 @@ Each component is self-contained and reusable.
   height: var(--flower-size);
   min-width: var(--flower-size);
   min-height: var(--flower-size);
-  border: 2px solid #fff;
+  border: var(--avatar-control-border) solid #fff;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--avatar-control-shadow);
   outline: none;
+  touch-action: manipulation;
   transition:
     transform 0.42s var(--flower-spring),
     background-color 0.22s ease,
@@ -330,8 +343,8 @@ Each component is self-contained and reusable.
 
 .action-flower__hub-icon {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: var(--avatar-control-icon);
+  height: var(--avatar-control-icon);
   transition:
     opacity 0.22s ease,
     transform 0.38s var(--flower-spring);
@@ -372,8 +385,8 @@ Each component is self-contained and reusable.
 }
 
 .action-flower__petal svg {
-  width: 20px;
-  height: 20px;
+  width: calc(var(--avatar-control-icon) * 0.92);
+  height: calc(var(--avatar-control-icon) * 0.92);
   display: block;
 }
 
@@ -595,6 +608,21 @@ Each component is self-contained and reusable.
   display: none;
 }
 
+.install-banner--guide-open .install-banner__guide {
+  animation: installGuideIn 0.28s ease;
+}
+
+@keyframes installGuideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .install-banner__actions {
   display: flex;
   gap: var(--space-xs);
@@ -637,6 +665,20 @@ Each component is self-contained and reusable.
 .install-banner__action.is-waiting {
   opacity: 0.82;
   pointer-events: none;
+}
+
+.install-banner__action.is-ready {
+  box-shadow: 0 3px 14px rgba(127, 201, 195, 0.45);
+}
+
+.install-banner__action.is-guide-active {
+  animation: installButtonPulse 0.42s ease;
+}
+
+@keyframes installButtonPulse {
+  0% { transform: scale(1); }
+  45% { transform: scale(0.96); }
+  100% { transform: scale(1); }
 }
 
 .install-banner__dismiss {
