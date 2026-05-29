@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dbc-v30';
+const CACHE_VERSION = 'dbc-v1';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -7,7 +7,7 @@ const PRECACHE_URLS = [
   '/data/card.json',
   '/js/pwa.js',
   '/js/main.js',
-  '/js/components/InstallBanner.js?v=13',
+  '/js/components/InstallBanner.js?v=1',
   '/styles/variables.css',
   '/styles/base.css',
   '/styles/components.css',
@@ -30,11 +30,10 @@ const PRECACHE_URLS = [
   '/assets/images/MYQR.png'
 ];
 
-const NETWORK_FIRST_PATHS = [
+const NETWORK_ONLY_PATHS = new Set([
   '/manifest.webmanifest',
-  '/site.webmanifest',
   '/sw.js'
-];
+]);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -72,8 +71,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (NETWORK_FIRST_PATHS.includes(requestUrl.pathname)) {
-    event.respondWith(networkOnly(event.request));
+  if (NETWORK_ONLY_PATHS.has(requestUrl.pathname)) {
+    event.respondWith(fetch(event.request));
     return;
   }
 
@@ -100,10 +99,6 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
-
-function networkOnly(request) {
-  return fetch(request);
-}
 
 function handleNavigate(request) {
   return fetch(request)

@@ -10,8 +10,11 @@ const PWAInstall = {
   closeBtn: null,
   guideEl: null,
   dismissedThisView: false,
+  fallbackTimer: null,
   initialized: false,
   defaultInstallLabel: 'Install',
+  defaultInstallText: 'One-tap access anytime.',
+  defaultGuideIOS: 'Tap Share, then Add to Home Screen.',
 
   applyLabels(labels = {}) {
     if (labels.installTitle) {
@@ -22,9 +25,9 @@ const PWAInstall = {
     }
 
     if (labels.installText) {
+      this.defaultInstallText = labels.installText;
       const text = document.querySelector('.install-banner__text');
       if (text) {
-        this.textDefault = labels.installText;
         text.textContent = labels.installText;
       }
     }
@@ -43,10 +46,14 @@ const PWAInstall = {
         dismissButton.textContent = labels.installDismiss;
       }
     }
+
+    if (labels.installGuideIOS) {
+      this.defaultGuideIOS = labels.installGuideIOS;
+    }
   },
 
   init() {
-    if (this.initialized) {
+    if (this.initialized || window.location.protocol === 'file:') {
       return;
     }
 
@@ -56,7 +63,6 @@ const PWAInstall = {
     this.dismissBtn = document.getElementById('pwa-install-dismiss');
     this.closeBtn = document.querySelector('.install-banner__close');
     this.guideEl = document.getElementById('install-banner-guide');
-    this.textDefault = document.querySelector('.install-banner__text')?.textContent || 'One-tap access anytime.';
 
     if (!this.banner) {
       return;
@@ -65,11 +71,6 @@ const PWAInstall = {
     window.addEventListener('beforeinstallprompt', (event) => this.capturePrompt(event));
     window.addEventListener('appinstalled', () => this.onAppInstalled());
     window.addEventListener('dbc-pwa-prompt-ready', () => {
-      if (window.__dbcDeferredPrompt) {
-        this.capturePrompt(window.__dbcDeferredPrompt);
-      }
-    });
-    window.addEventListener('dbc-pwa-sw-ready', () => {
       if (window.__dbcDeferredPrompt) {
         this.capturePrompt(window.__dbcDeferredPrompt);
       }
@@ -84,34 +85,28 @@ const PWAInstall = {
     if (window.__dbcDeferredPrompt) {
       this.capturePrompt(window.__dbcDeferredPrompt);
     } else if (this.isIOS()) {
-      window.setTimeout(() => {
+      this.fallbackTimer = window.setTimeout(() => {
         if (!this.dismissedThisView && !this.isStandalone()) {
           this.show();
         }
       }, 1200);
     }
 
-    if (this.installBtn) {
-      this.installBtn.addEventListener('click', () => this.promptInstall());
-    }
+    this.installBtn?.addEventListener('click', () => this.promptInstall());
 
-    if (this.dismissBtn) {
-      this.dismissBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        this.dismissedThisView = true;
-        this.hide();
-      });
-    }
+    this.dismissBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.dismissedThisView = true;
+      this.hide();
+    });
 
-    if (this.closeBtn) {
-      this.closeBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        this.dismissedThisView = true;
-        this.hide();
-      });
-    }
+    this.closeBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.dismissedThisView = true;
+      this.hide();
+    });
 
     this.updateInstallButtonState();
   },
@@ -131,6 +126,12 @@ const PWAInstall = {
 
     this.deferredPrompt = prompt;
     window.__dbcDeferredPrompt = prompt;
+
+    if (this.fallbackTimer) {
+      window.clearTimeout(this.fallbackTimer);
+      this.fallbackTimer = null;
+    }
+
     this.hideGuide();
     this.updateInstallButtonState();
 
@@ -198,12 +199,18 @@ const PWAInstall = {
     this.banner?.classList.remove('install-banner--guide-open');
   },
 
-  getDeferredPrompt() {
-    return this.deferredPrompt || window.__dbcDeferredPrompt || null;
+  showGuide(message) {
+    if (!this.guideEl || !message) {
+      return;
+    }
+
+    this.guideEl.textContent = message;
+    this.guideEl.hidden = false;
+    this.banner?.classList.add('install-banner--guide-open');
   },
 
-  canNativeInstall() {
-    return Boolean(this.getDeferredPrompt());
+  getDeferredPrompt() {
+    return this.deferredPrompt || window.__dbcDeferredPrompt || null;
   },
 
   updateInstallButtonState() {
@@ -211,12 +218,9 @@ const PWAInstall = {
       return;
     }
 
-    const ready = this.canNativeInstall();
+    const ready = Boolean(this.getDeferredPrompt());
 
-    this.installBtn.hidden = false;
-    this.installBtn.removeAttribute('hidden');
     this.installBtn.classList.toggle('is-ready', ready);
-    this.installBtn.disabled = !ready && !this.isIOS();
     this.installBtn.textContent = this.defaultInstallLabel;
     this.installBtn.setAttribute('aria-label', ready
       ? `${this.defaultInstallLabel} — ready`
@@ -226,7 +230,7 @@ const PWAInstall = {
     if (textEl) {
       textEl.textContent = ready
         ? 'Tap Install to add this card to your device.'
-        : this.textDefault;
+        : this.defaultInstallText;
     }
   },
 
@@ -292,17 +296,7 @@ const PWAInstall = {
       }
     }
 
-    this.showGuide('Tap Share, then Add to Home Screen.');
-  },
-
-  showGuide(message) {
-    if (!this.guideEl || !message) {
-      return;
-    }
-
-    this.guideEl.textContent = message;
-    this.guideEl.hidden = false;
-    this.banner?.classList.add('install-banner--guide-open');
+    this.showGuide(this.defaultGuideIOS);
   },
 
   openInChrome() {
@@ -314,10 +308,6 @@ const PWAInstall = {
 };
 
 function bootPwaInstall() {
-  if (window.location.protocol === 'file:') {
-    return;
-  }
-
   PWAInstall.init();
 }
 

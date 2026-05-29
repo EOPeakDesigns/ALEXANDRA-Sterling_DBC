@@ -181,7 +181,7 @@ for optimal visual impact across all device types and screen sizes.
   .install-banner__close:hover {
     transform: none;
   }
-  
+
   .avatar-container {
     --avatar-size: 100px;
     margin-bottom: var(--space-md);

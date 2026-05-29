@@ -481,6 +481,9 @@ Each component is self-contained and reusable.
   z-index: 0;
 }
 
+/* ==========================================================================
+   PWA Install Banner
+   ========================================================================== */
 .install-banner {
   position: fixed;
   right: max(var(--space-md), env(safe-area-inset-right));
@@ -608,21 +611,6 @@ Each component is self-contained and reusable.
   display: none;
 }
 
-.install-banner--guide-open .install-banner__guide {
-  animation: installGuideIn 0.28s ease;
-}
-
-@keyframes installGuideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .install-banner__actions {
   display: flex;
   gap: var(--space-xs);
@@ -662,52 +650,8 @@ Each component is self-contained and reusable.
   transform: scale(0.97);
 }
 
-.install-banner__action.is-waiting {
-  opacity: 0.88;
-  pointer-events: none;
-}
-
-.install-banner__action:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
 .install-banner__action.is-ready {
   box-shadow: 0 3px 14px rgba(127, 201, 195, 0.45);
-}
-
-.install-banner__action.is-preparing {
-  opacity: 0.88;
-  pointer-events: none;
-  position: relative;
-}
-
-.install-banner__action.is-preparing::after {
-  content: '';
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  right: 12px;
-  top: 50%;
-  margin-top: -7px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: installButtonSpin 0.7s linear infinite;
-}
-
-@keyframes installButtonSpin {
-  to { transform: rotate(360deg); }
-}
-
-.install-banner__action.is-guide-active {
-  animation: installButtonPulse 0.42s ease;
-}
-
-@keyframes installButtonPulse {
-  0% { transform: scale(1); }
-  45% { transform: scale(0.96); }
-  100% { transform: scale(1); }
 }
 
 .install-banner__dismiss {

@@ -42,7 +42,7 @@ class BusinessCardApp {
       this.updateSeoMeta();
       this.initializeComponents();
       this.initializeUtilities();
-      this.initializeInstallBanner();
+      this.applyInstallLabels();
       this.initialized = true;
     } catch (error) {
       console.error('Failed to initialize BusinessCardApp:', error);
@@ -98,34 +98,20 @@ class BusinessCardApp {
         skipLink.textContent = labels.skipToContent;
       }
     }
+  }
 
-    if (labels?.installTitle) {
-      const installTitle = document.querySelector('#install-banner-title');
-      if (installTitle) {
-        installTitle.textContent = labels.installTitle;
-      }
+  applyInstallLabels() {
+    if (window.location.protocol === 'file:' || typeof PWAInstall === 'undefined') {
+      return;
     }
 
-    if (labels?.installText) {
-      const installText = document.querySelector('.install-banner__text');
-      if (installText) {
-        installText.textContent = labels.installText;
-      }
-    }
-
-    if (labels?.installApp) {
-      const installAction = document.getElementById('pwa-install-btn');
-      if (installAction) {
-        installAction.textContent = labels.installApp;
-      }
-    }
-
-    if (labels?.installDismiss) {
-      const installDismiss = document.getElementById('pwa-install-dismiss');
-      if (installDismiss) {
-        installDismiss.textContent = labels.installDismiss;
-      }
-    }
+    PWAInstall.applyLabels(this.cardData?.labels || {
+      installTitle: 'Install Card',
+      installText: 'One-tap access anytime.',
+      installApp: 'Install',
+      installDismiss: 'Not now',
+      installGuideIOS: 'Tap Share, then Add to Home Screen.'
+    });
   }
 
   updateSeoMeta() {
@@ -356,19 +342,6 @@ class BusinessCardApp {
     }, 1500);
   }
 
-  initializeInstallBanner() {
-    if (window.location.protocol === 'file:') {
-      return;
-    }
-
-    PWAInstall.applyLabels(this.cardData?.labels || {
-      installTitle: 'Install Card',
-      installText: 'One-tap access anytime.',
-      installApp: 'Install',
-      installDismiss: 'Not now'
-    });
-  }
-
   initializeUtilities() {
     if (this.config.accessibility.enableKeyboardNavigation) {
       initializeKeyboardNavigation();
@@ -377,8 +350,6 @@ class BusinessCardApp {
     if (this.config.accessibility.respectReducedMotion) {
       handleReducedMotion();
     }
-
-    initializeManifest();
   }
 
   getComponent(name) {
@@ -412,15 +383,6 @@ function normalizeWebsiteUrl(website) {
     return '';
   }
   return website.startsWith('http') ? website : `https://${website}`;
-}
-
-function initializeManifest() {
-  if (window.location.protocol === 'file:') {
-    const manifestLink = document.querySelector('link[rel="manifest"]');
-    if (manifestLink) {
-      manifestLink.remove();
-    }
-  }
 }
 
 function initializeApp() {

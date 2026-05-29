@@ -1,12 +1,11 @@
 /**
- * PWA bootstrap — must run first in <head>.
- * Captures install prompt + registers service worker + one-time SW bootstrap reload.
+ * PWA bootstrap — runs first in <head>.
+ * Captures install prompt early and registers the service worker.
  */
 (function () {
   'use strict';
 
   window.__dbcDeferredPrompt = null;
-  window.__dbcPwaReady = false;
 
   window.addEventListener('beforeinstallprompt', function (event) {
     event.preventDefault();
@@ -28,14 +27,6 @@
 
   var hadControllerAtStart = Boolean(navigator.serviceWorker.controller);
 
-  function markSwBooted() {
-    try {
-      sessionStorage.setItem('dbc-sw-boot', '1');
-    } catch (error) {
-      // Ignore storage errors.
-    }
-  }
-
   function shouldBootstrapReload() {
     if (window.__dbcDeferredPrompt) {
       return false;
@@ -53,7 +44,12 @@
       return;
     }
 
-    markSwBooted();
+    try {
+      sessionStorage.setItem('dbc-sw-boot', '1');
+    } catch (error) {
+      return;
+    }
+
     window.location.reload();
   }
 
@@ -74,7 +70,6 @@
       return navigator.serviceWorker.ready;
     })
     .then(function () {
-      window.__dbcPwaReady = true;
       window.dispatchEvent(new Event('dbc-pwa-sw-ready'));
 
       if (!hadControllerAtStart && !navigator.serviceWorker.controller) {

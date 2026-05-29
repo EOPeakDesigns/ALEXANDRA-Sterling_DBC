@@ -131,4 +131,10 @@ Keyframe animations and motion effects for the business card application.
     animation: none;
     opacity: 0.35;
   }
+
+  .install-banner__panel {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
