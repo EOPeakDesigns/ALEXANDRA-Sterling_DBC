@@ -1,5 +1,5 @@
 /**
- * Contact link utilities — mobile-first maps, Gmail, and external navigation
+ * Contact link utilities — new-tab navigation keeps the card tab in place
  */
 
 /**
@@ -27,23 +27,29 @@ function isAndroidDevice() {
 }
 
 /**
- * Navigate to an external URL — same-tab on mobile to avoid popup blockers
+ * Open a URL in a new browser tab — never navigates the card tab
  * @param {string} url - Destination URL
  */
-function openExternalUrl(url) {
+function openInNewTab(url) {
   if (!url) {
     return;
   }
 
-  if (isMobileDevice()) {
-    window.location.assign(url);
-    return;
-  }
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
-  const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-  if (!newWindow) {
-    window.location.assign(url);
-  }
+/**
+ * @deprecated Use openInNewTab — kept for backward compatibility
+ * @param {string} url - Destination URL
+ */
+function openExternalUrl(url) {
+  openInNewTab(url);
 }
 
 /**
@@ -51,13 +57,7 @@ function openExternalUrl(url) {
  * @param {string} webUrl - Google Maps web URL
  */
 function openGoogleMapsWeb(webUrl) {
-  const link = document.createElement('a');
-  link.href = webUrl;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  openInNewTab(webUrl);
 }
 
 /**
@@ -94,13 +94,21 @@ function openMapsForAddress(address) {
   const mapsWebUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
 
   if (isAndroidDevice()) {
-    window.location.href = `intent://www.google.com/maps/search/?api=1&query=${query}#Intent;scheme=https;package=com.google.android.apps.maps;end`;
+    const intentLink = document.createElement('a');
+    intentLink.href = `intent://www.google.com/maps/search/?api=1&query=${query}#Intent;scheme=https;package=com.google.android.apps.maps;end`;
+    document.body.appendChild(intentLink);
+    intentLink.click();
+    document.body.removeChild(intentLink);
     scheduleMapsWebFallback(mapsWebUrl);
     return;
   }
 
   if (isIOSDevice()) {
-    window.location.href = `comgooglemaps://?q=${query}`;
+    const mapsLink = document.createElement('a');
+    mapsLink.href = `comgooglemaps://?q=${query}`;
+    document.body.appendChild(mapsLink);
+    mapsLink.click();
+    document.body.removeChild(mapsLink);
     scheduleMapsWebFallback(mapsWebUrl);
     return;
   }
@@ -109,63 +117,23 @@ function openMapsForAddress(address) {
 }
 
 /**
- * Schedule a mailto fallback only if the app handoff did not occur
- * @param {string} mailtoUrl - mailto fallback URL
- * @param {number} delayMs - Delay before fallback
- */
-function scheduleMailtoFallback(mailtoUrl, delayMs = 700) {
-  let fallbackTimer = null;
-
-  const cancelFallback = () => {
-    if (fallbackTimer !== null) {
-      window.clearTimeout(fallbackTimer);
-      fallbackTimer = null;
-    }
-  };
-
-  document.addEventListener('visibilitychange', cancelFallback, { once: true });
-  window.addEventListener('pagehide', cancelFallback, { once: true });
-
-  fallbackTimer = window.setTimeout(() => {
-    if (document.visibilityState === 'visible') {
-      window.location.href = mailtoUrl;
-    }
-  }, delayMs);
-}
-
-/**
- * Open Gmail compose — Gmail app first on smartphones, web on desktop
+ * Open Gmail compose in a new tab — card tab stays on the card
  * @param {string} email - Recipient email address
  */
 function openGmailCompose(email) {
   const recipient = email.trim();
   const encoded = encodeURIComponent(recipient);
   const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encoded}`;
-  const mailtoUrl = `mailto:${recipient}`;
 
-  if (!isMobileDevice()) {
-    openExternalUrl(gmailWebUrl);
-    return;
-  }
-
-  if (isAndroidDevice()) {
-    window.location.href = `intent://compose?to=${encoded}#Intent;scheme=googlegmail;package=com.google.android.gm;end`;
-    scheduleMailtoFallback(mailtoUrl);
-    return;
-  }
-
-  if (isIOSDevice()) {
-    window.location.href = `googlegmail:///co?to=${encoded}`;
-    scheduleMailtoFallback(mailtoUrl);
-    return;
-  }
-
-  openExternalUrl(gmailWebUrl);
+  openInNewTab(gmailWebUrl);
 }
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     isMobileDevice,
+    isIOSDevice,
+    isAndroidDevice,
+    openInNewTab,
     openExternalUrl,
     openMapsForAddress,
     openGmailCompose

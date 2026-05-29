@@ -481,6 +481,10 @@ Each component is self-contained and reusable.
   display: none !important;
 }
 
+.install-banner--visible {
+  display: block;
+}
+
 .install-banner__panel {
   position: relative;
   pointer-events: auto;

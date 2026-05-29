@@ -45,13 +45,16 @@ class ContactRow {
           return;
         }
 
+        event.preventDefault();
+        event.stopPropagation();
+
         const phoneText = this.element.querySelector('.contact-text')?.textContent?.trim();
         if (!phoneText) {
           return;
         }
 
         const cleanPhone = phoneText.replace(/[^\d+]/g, '').replace(/^\+/, '');
-        openExternalUrl(`https://wa.me/${cleanPhone}`);
+        openInNewTab(`https://wa.me/${cleanPhone}`);
       });
     }
 
@@ -60,6 +63,9 @@ class ContactRow {
         if (event.target.closest('.copy-btn')) {
           return;
         }
+
+        event.preventDefault();
+        event.stopPropagation();
 
         const emailText = this.element.querySelector('.contact-text')?.textContent?.trim();
         if (!emailText) {
@@ -76,13 +82,16 @@ class ContactRow {
           return;
         }
 
+        event.preventDefault();
+        event.stopPropagation();
+
         const websiteText = this.element.querySelector('.contact-text')?.textContent?.trim();
         if (!websiteText) {
           return;
         }
 
         const websiteUrl = websiteText.startsWith('http') ? websiteText : `https://${websiteText}`;
-        openExternalUrl(websiteUrl);
+        openInNewTab(websiteUrl);
       });
     }
 
@@ -91,6 +100,9 @@ class ContactRow {
         if (event.target.closest('.copy-btn')) {
           return;
         }
+
+        event.preventDefault();
+        event.stopPropagation();
 
         const addressText = this.element.querySelector('.contact-text')?.textContent?.trim();
         if (!addressText) {

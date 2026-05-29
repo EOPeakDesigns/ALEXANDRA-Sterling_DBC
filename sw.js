@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dbc-v14';
+const CACHE_VERSION = 'dbc-v15';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -27,16 +27,15 @@ const PRECACHE_URLS = [
   './assets/icons/favicon/png/apple-touch-icon.png',
   './assets/icons/favicon/png/android-chrome-192x192.png',
   './assets/icons/favicon/png/android-chrome-512x512.png',
-  './robots.txt',
-  './sitemap.xml',
-  './vercel.json',
   './assets/images/Owner.webp',
   './assets/images/MYQR.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(PRECACHE_URLS.map((url) => cache.add(url)))
+    )
   );
   self.skipWaiting();
 });
