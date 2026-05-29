@@ -117,13 +117,72 @@ function openMapsForAddress(address) {
 }
 
 /**
- * Open Gmail compose in a new tab — card tab stays on the card
+ * Schedule Gmail web fallback only if the app handoff did not occur
+ * @param {string} webUrl - Gmail web compose URL
+ * @param {number} delayMs - Delay before fallback
+ */
+function scheduleGmailWebFallback(webUrl, delayMs = 700) {
+  let fallbackTimer = null;
+
+  const cancelFallback = () => {
+    if (fallbackTimer !== null) {
+      window.clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
+  };
+
+  document.addEventListener('visibilitychange', cancelFallback, { once: true });
+  window.addEventListener('pagehide', cancelFallback, { once: true });
+
+  fallbackTimer = window.setTimeout(() => {
+    if (document.visibilityState === 'visible') {
+      openInNewTab(webUrl);
+    }
+  }, delayMs);
+}
+
+/**
+ * Open a transient link without navigating the card tab
+ * @param {string} url - Destination URL or app scheme
+ */
+function openTransientLink(url) {
+  if (!url) {
+    return;
+  }
+
+  const link = document.createElement('a');
+  link.href = url;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
+ * Open Gmail compose — Gmail app first on mobile, web compose fallback
  * @param {string} email - Recipient email address
  */
 function openGmailCompose(email) {
   const recipient = email.trim();
-  const encoded = encodeURIComponent(recipient);
-  const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encoded}`;
+  if (!recipient) {
+    return;
+  }
+
+  const encodedRecipient = encodeURIComponent(recipient);
+  const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedRecipient}`;
+
+  if (isAndroidDevice()) {
+    openTransientLink(
+      `intent://send?to=${encodedRecipient}#Intent;scheme=mailto;package=com.google.android.gm;end`
+    );
+    scheduleGmailWebFallback(gmailWebUrl);
+    return;
+  }
+
+  if (isIOSDevice()) {
+    openTransientLink(`googlegmail:///co?to=${encodedRecipient}`);
+    scheduleGmailWebFallback(gmailWebUrl);
+    return;
+  }
 
   openInNewTab(gmailWebUrl);
 }
