@@ -1,13 +1,16 @@
 /**
- * PWA Install Banner — bottom-right floating prompt
- *
- * Shows on smartphones when the card is not yet installed.
- * Hidden in standalone mode or after the user dismisses it.
+ * PWA Install Banner — compact mobile prompt, bottom-right
  */
 
 const INSTALL_DISMISS_KEY = 'dbc-install-dismiss-v3';
 const INSTALL_INSTALLED_KEY = 'dbc-install-installed-v3';
 const SHOW_ATTEMPT_DELAYS_MS = [800, 2200, 4500];
+
+const INSTALL_GUIDES = {
+  ios: 'Tap Share, then Add to Home Screen.',
+  android: 'Tap menu, then Install app.',
+  desktop: 'Use your browser menu to install this app.'
+};
 
 class InstallBanner {
   constructor(element) {
@@ -15,18 +18,48 @@ class InstallBanner {
     this.closeButton = element.querySelector('.install-banner__close');
     this.dismissButton = element.querySelector('.install-banner__dismiss');
     this.installButton = element.querySelector('.install-banner__action');
-    this.iosHint = element.querySelector('.install-banner__ios-hint');
-    this.androidHint = element.querySelector('.install-banner__android-hint');
+    this.guideEl = element.querySelector('#install-banner-guide');
+    this.titleEl = element.querySelector('#install-banner-title');
+    this.textEl = element.querySelector('.install-banner__text');
     this.deferredPrompt = null;
     this.promptReceived = false;
     this.isVisible = false;
     this.showTimers = [];
+    this.labels = {};
 
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handleBeforeInstallPrompt = this.handleBeforeInstallPrompt.bind(this);
     this.handleAppInstalled = this.handleAppInstalled.bind(this);
 
     this.initialize();
+  }
+
+  setLabels(labels = {}) {
+    this.labels = labels;
+
+    if (labels.installTitle && this.titleEl) {
+      this.titleEl.textContent = labels.installTitle;
+    }
+
+    if (labels.installText && this.textEl) {
+      this.textEl.textContent = labels.installText;
+    }
+
+    if (labels.installApp && this.installButton) {
+      this.installButton.textContent = labels.installApp;
+    }
+
+    if (labels.installDismiss && this.dismissButton) {
+      this.dismissButton.textContent = labels.installDismiss;
+    }
+
+    if (labels.installGuideIOS) {
+      INSTALL_GUIDES.ios = labels.installGuideIOS;
+    }
+
+    if (labels.installGuideAndroid) {
+      INSTALL_GUIDES.android = labels.installGuideAndroid;
+    }
   }
 
   initialize() {
@@ -60,6 +93,7 @@ class InstallBanner {
       await this.handleInstallClick();
     });
 
+    this.ensureMobileActionsVisible();
     this.scheduleShowAttempts();
 
     if (document.readyState === 'complete') {
@@ -73,7 +107,8 @@ class InstallBanner {
     event.preventDefault();
     this.deferredPrompt = event;
     this.promptReceived = true;
-    this.configureAndroidMode();
+    this.hideGuide();
+    this.ensureMobileActionsVisible();
     this.attemptShow();
   }
 
@@ -84,19 +119,64 @@ class InstallBanner {
   }
 
   async handleInstallClick() {
-    if (!this.deferredPrompt) {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      const choice = await this.deferredPrompt.userChoice;
+
+      if (choice.outcome === 'accepted') {
+        this.markInstalled();
+      }
+
+      this.deferredPrompt = null;
+      this.hide(false);
       return;
     }
 
-    this.deferredPrompt.prompt();
-    const choice = await this.deferredPrompt.userChoice;
+    this.showPlatformGuide();
+  }
 
-    if (choice.outcome === 'accepted') {
-      this.markInstalled();
+  showPlatformGuide() {
+    if (!this.guideEl) {
+      return;
     }
 
-    this.deferredPrompt = null;
-    this.hide(false);
+    let message = INSTALL_GUIDES.desktop;
+
+    if (this.isIOSDevice()) {
+      message = INSTALL_GUIDES.ios;
+    } else if (this.isAndroidDevice()) {
+      message = INSTALL_GUIDES.android;
+    }
+
+    this.guideEl.textContent = message;
+    this.guideEl.hidden = false;
+    this.banner.classList.add('install-banner--guide-open');
+  }
+
+  hideGuide() {
+    if (!this.guideEl) {
+      return;
+    }
+
+    this.guideEl.hidden = true;
+    this.guideEl.textContent = '';
+    this.banner.classList.remove('install-banner--guide-open');
+  }
+
+  ensureMobileActionsVisible() {
+    if (!this.isMobileContext()) {
+      return;
+    }
+
+    if (this.installButton) {
+      this.installButton.hidden = false;
+      this.installButton.removeAttribute('hidden');
+    }
+
+    if (this.dismissButton) {
+      this.dismissButton.hidden = false;
+      this.dismissButton.removeAttribute('hidden');
+    }
   }
 
   scheduleShowAttempts() {
@@ -168,10 +248,7 @@ class InstallBanner {
       return;
     }
 
-    if (!this.promptReceived) {
-      this.configureFallbackMode();
-    }
-
+    this.ensureMobileActionsVisible();
     this.show();
   }
 
@@ -192,8 +269,9 @@ class InstallBanner {
     this.isVisible = false;
     this.banner.hidden = true;
     this.banner.setAttribute('hidden', '');
-    this.banner.classList.remove('install-banner--visible');
+    this.banner.classList.remove('install-banner--visible', 'install-banner--guide-open');
     this.banner.setAttribute('aria-hidden', 'true');
+    this.hideGuide();
     document.removeEventListener('keydown', this.handleKeydown);
 
     if (persistDismiss) {
@@ -210,60 +288,6 @@ class InstallBanner {
   handleKeydown(event) {
     if (event.key === 'Escape') {
       this.dismiss();
-    }
-  }
-
-  configureAndroidMode() {
-    if (this.iosHint) {
-      this.iosHint.hidden = true;
-    }
-    if (this.androidHint) {
-      this.androidHint.hidden = false;
-    }
-    if (this.installButton) {
-      this.installButton.hidden = false;
-    }
-  }
-
-  configureIOSMode() {
-    if (this.iosHint) {
-      this.iosHint.hidden = false;
-    }
-    if (this.androidHint) {
-      this.androidHint.hidden = true;
-    }
-    if (this.installButton) {
-      this.installButton.hidden = true;
-    }
-  }
-
-  configureFallbackMode() {
-    if (this.isIOSDevice()) {
-      this.configureIOSMode();
-      return;
-    }
-
-    if (this.isAndroidDevice()) {
-      if (this.iosHint) {
-        this.iosHint.hidden = true;
-      }
-      if (this.androidHint) {
-        this.androidHint.hidden = false;
-      }
-      if (this.installButton) {
-        this.installButton.hidden = !this.promptReceived;
-      }
-      return;
-    }
-
-    if (this.iosHint) {
-      this.iosHint.hidden = true;
-    }
-    if (this.androidHint) {
-      this.androidHint.hidden = true;
-    }
-    if (this.installButton) {
-      this.installButton.hidden = !this.promptReceived;
     }
   }
 

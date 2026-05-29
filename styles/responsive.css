@@ -167,11 +167,13 @@ for optimal visual impact across all device types and screen sizes.
   .install-banner {
     right: max(var(--space-sm), env(safe-area-inset-right));
     bottom: max(var(--space-sm), env(safe-area-inset-bottom));
-    width: min(320px, calc(100vw - var(--space-lg)));
+    width: min(288px, calc(100vw - var(--space-md) * 2));
   }
 
-  .install-banner__panel {
-    width: 100%;
+  .install-banner__action,
+  .install-banner__dismiss {
+    min-height: 44px;
+    font-size: 0.82rem;
   }
 
   .install-banner__action:hover,

@@ -99,6 +99,20 @@ class BusinessCardApp {
       }
     }
 
+    if (labels?.installTitle) {
+      const installTitle = document.querySelector('#install-banner-title');
+      if (installTitle) {
+        installTitle.textContent = labels.installTitle;
+      }
+    }
+
+    if (labels?.installText) {
+      const installText = document.querySelector('.install-banner__text');
+      if (installText) {
+        installText.textContent = labels.installText;
+      }
+    }
+
     if (labels?.installApp) {
       const installAction = document.querySelector('.install-banner__action');
       if (installAction) {
@@ -350,7 +364,16 @@ class BusinessCardApp {
     }
 
     try {
-      this.components.set('installBanner', new InstallBanner(banner));
+      const installBanner = new InstallBanner(banner);
+      installBanner.setLabels(this.cardData?.labels || {
+        installTitle: 'Install Card',
+        installText: 'One-tap access anytime.',
+        installApp: 'Install',
+        installDismiss: 'Not now',
+        installGuideIOS: 'Tap Share, then Add to Home Screen.',
+        installGuideAndroid: 'Tap menu, then Install app.'
+      });
+      this.components.set('installBanner', installBanner);
     } catch (error) {
       console.error('Failed to initialize install banner:', error);
     }

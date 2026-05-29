@@ -79,18 +79,15 @@
               <path d="M12 12l9-5M12 12v10M12 12L3 7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
             </svg>
           </span>
-          <h2 id="install-banner-title" class="install-banner__title">Install Card</h2>
+          <div class="install-banner__copy">
+            <h2 id="install-banner-title" class="install-banner__title">Install Card</h2>
+            <p class="install-banner__text">One-tap access anytime.</p>
+          </div>
         </div>
-        <p class="install-banner__text">Save this card to your home screen for one-tap access anytime.</p>
-        <p class="install-banner__ios-hint" hidden>
-          Tap <strong>Share</strong> in Safari, then <strong>Add to Home Screen</strong>.
-        </p>
-        <p class="install-banner__android-hint" hidden>
-          Tap <strong>Install</strong> below, or use your browser menu to add to home screen.
-        </p>
+        <p class="install-banner__guide" id="install-banner-guide" hidden aria-live="polite"></p>
       </div>
       <div class="install-banner__actions">
-        <button type="button" class="install-banner__action">Install App</button>
+        <button type="button" class="install-banner__action">Install</button>
         <button type="button" class="install-banner__dismiss">Not now</button>
       </div>
     </div>
