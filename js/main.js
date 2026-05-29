@@ -114,14 +114,14 @@ class BusinessCardApp {
     }
 
     if (labels?.installApp) {
-      const installAction = document.querySelector('.install-banner__action');
+      const installAction = document.getElementById('pwa-install-btn');
       if (installAction) {
         installAction.textContent = labels.installApp;
       }
     }
 
     if (labels?.installDismiss) {
-      const installDismiss = document.querySelector('.install-banner__dismiss');
+      const installDismiss = document.getElementById('pwa-install-dismiss');
       if (installDismiss) {
         installDismiss.textContent = labels.installDismiss;
       }
@@ -357,25 +357,16 @@ class BusinessCardApp {
   }
 
   initializeInstallBanner() {
-    const banner = document.querySelector('#install-banner');
-
-    if (!banner || window.location.protocol === 'file:') {
+    if (window.location.protocol === 'file:') {
       return;
     }
 
-    try {
-      const installBanner = new InstallBanner(banner);
-      installBanner.setLabels(this.cardData?.labels || {
-        installTitle: 'Install Card',
-        installText: 'One-tap access anytime.',
-        installApp: 'Install',
-        installDismiss: 'Not now',
-        installGuideIOS: 'Tap Share, then Add to Home Screen.'
-      });
-      this.components.set('installBanner', installBanner);
-    } catch (error) {
-      console.error('Failed to initialize install banner:', error);
-    }
+    PWAInstall.applyLabels(this.cardData?.labels || {
+      installTitle: 'Install Card',
+      installText: 'One-tap access anytime.',
+      installApp: 'Install',
+      installDismiss: 'Not now'
+    });
   }
 
   initializeUtilities() {
@@ -388,7 +379,6 @@ class BusinessCardApp {
     }
 
     initializeManifest();
-    registerServiceWorker();
   }
 
   getComponent(name) {
@@ -430,33 +420,6 @@ function initializeManifest() {
     if (manifestLink) {
       manifestLink.remove();
     }
-  }
-}
-
-function registerServiceWorker() {
-  if (!('serviceWorker' in navigator) || window.location.protocol === 'file:') {
-    return;
-  }
-
-  const register = () => {
-    if (registerServiceWorker.started) {
-      return;
-    }
-
-    registerServiceWorker.started = true;
-
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(() => navigator.serviceWorker.ready).then(() => {
-      window.dispatchEvent(new CustomEvent('dbcserviceworkerready'));
-    }).catch((error) => {
-      console.warn('Service worker registration failed:', error);
-    });
-  };
-
-  if (document.readyState === 'complete') {
-    register();
-  } else {
-    register();
-    window.addEventListener('load', register, { once: true });
   }
 }
 

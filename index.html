@@ -16,45 +16,12 @@
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/favicon/png/android-chrome-512x512.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
-    (function() {
-      window.__dbcInstallPromptEvent = null;
-
-      function captureInstallPrompt(event) {
-        event.preventDefault();
-        window.__dbcInstallPromptEvent = event;
-        window.dispatchEvent(new CustomEvent('dbcinstallpromptready', { detail: event }));
-      }
-
-      window.addEventListener('beforeinstallprompt', captureInstallPrompt);
-
-      if (!('serviceWorker' in navigator) || window.location.protocol === 'file:') {
-        return;
-      }
-
-      navigator.serviceWorker.register('/sw.js', { scope: '/' })
-        .then(function() { return navigator.serviceWorker.ready; })
-        .then(function() {
-          window.dispatchEvent(new CustomEvent('dbcserviceworkerready'));
-        })
-        .catch(function() {});
-
-      navigator.serviceWorker.addEventListener('controllerchange', function() {
-        if (!navigator.serviceWorker.controller) {
-          return;
-        }
-
-        try {
-          if (sessionStorage.getItem('dbc-sw-reloaded') === '1') {
-            return;
-          }
-          sessionStorage.setItem('dbc-sw-reloaded', '1');
-        } catch (error) {
-          return;
-        }
-
-        window.location.reload();
-      });
-    })();
+    window.__dbcDeferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(event) {
+      event.preventDefault();
+      window.__dbcDeferredPrompt = event;
+      window.dispatchEvent(new Event('dbc-pwa-prompt-ready'));
+    });
   </script>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -97,7 +64,7 @@
   <a class="skip-link" href="#main-content">Skip to card content</a>
 
   <!-- PWA Install Banner -->
-  <div id="install-banner"
+  <div id="pwa-install-banner"
        class="install-banner"
        role="dialog"
        aria-labelledby="install-banner-title"
@@ -128,8 +95,8 @@
         <p class="install-banner__guide" id="install-banner-guide" hidden aria-live="polite"></p>
       </div>
       <div class="install-banner__actions">
-        <button type="button" class="install-banner__action">Install</button>
-        <button type="button" class="install-banner__dismiss">Not now</button>
+        <button type="button" id="pwa-install-btn" class="install-banner__action">Install</button>
+        <button type="button" id="pwa-install-dismiss" class="install-banner__dismiss">Not now</button>
       </div>
     </div>
   </div>
@@ -460,7 +427,7 @@
   <script src="js/components/QRModal.js"></script>
   <script src="js/components/VideoModal.js?v=2"></script>
   <script src="js/components/ActionFlower.js"></script>
-  <script src="js/components/InstallBanner.js?v=8"></script>
+  <script src="js/components/InstallBanner.js?v=10"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
