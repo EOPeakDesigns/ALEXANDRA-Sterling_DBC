@@ -1,39 +1,26 @@
-const CACHE_VERSION = 'dbc-v1';
+const CACHE_VERSION = 'dbc-v2';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
-  '/index.html',
   '/offline.html',
-  '/data/card.json',
-  '/js/pwa.js',
-  '/js/main.js',
-  '/js/components/InstallBanner.js?v=1',
-  '/styles/variables.css',
-  '/styles/base.css',
-  '/styles/components.css',
-  '/styles/animations.css',
-  '/styles/responsive.css',
-  '/js/utils/clipboard.js',
-  '/js/utils/accessibility.js',
-  '/js/utils/contactLinks.js',
-  '/js/utils/vcard.js',
-  '/js/utils/share.js',
-  '/js/components/ContactRow.js',
-  '/js/components/SocialBar.js',
-  '/js/components/QRModal.js',
-  '/js/components/VideoModal.js?v=2',
-  '/js/components/ActionFlower.js',
+  '/manifest.webmanifest',
   '/assets/icons/favicon/png/android-chrome-192x192.png',
   '/assets/icons/favicon/png/android-chrome-512x512.png',
-  '/assets/icons/favicon/png/apple-touch-icon.png',
-  '/assets/images/Owner.webp',
-  '/assets/images/MYQR.png'
+  '/assets/icons/favicon/png/apple-touch-icon.png'
 ];
 
 const NETWORK_ONLY_PATHS = new Set([
   '/manifest.webmanifest',
   '/sw.js'
 ]);
+
+const NETWORK_FIRST_PREFIXES = [
+  '/',
+  '/index.html',
+  '/js/',
+  '/styles/',
+  '/data/'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -76,8 +63,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (event.request.mode === 'navigate') {
-    event.respondWith(handleNavigate(event.request));
+  if (event.request.mode === 'navigate' || isNetworkFirst(requestUrl.pathname)) {
+    event.respondWith(networkFirst(event.request));
     return;
   }
 
@@ -87,30 +74,49 @@ self.addEventListener('fetch', (event) => {
         return cached;
       }
 
-      return fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200 && response.type === 'basic') {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
+      return fetchAndCache(event.request);
     })
   );
 });
 
-function handleNavigate(request) {
+function isNetworkFirst(pathname) {
+  return NETWORK_FIRST_PREFIXES.some((prefix) =>
+    prefix === '/' ? pathname === '/' : pathname.startsWith(prefix)
+  );
+}
+
+function networkFirst(request) {
   return fetch(request)
     .then((response) => {
-      if (response && response.status === 200) {
+      if (response && response.status === 200 && response.type === 'basic') {
         const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', clone));
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
       }
       return response;
     })
     .catch(() =>
-      caches.match('/index.html')
-        .then((cached) => cached || caches.match('/offline.html'))
+      caches.match(request).then((cached) => {
+        if (cached) {
+          return cached;
+        }
+
+        if (request.mode === 'navigate') {
+          return caches.match('/offline.html');
+        }
+
+        return Response.error();
+      })
     );
+}
+
+function fetchAndCache(request) {
+  return fetch(request)
+    .then((response) => {
+      if (response && response.status === 200 && response.type === 'basic') {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+      }
+      return response;
+    })
+    .catch(() => caches.match(request));
 }

@@ -11,6 +11,8 @@ const PWAInstall = {
   guideEl: null,
   dismissedThisView: false,
   fallbackTimer: null,
+  installabilityTimer: null,
+  promptWaitTimer: null,
   initialized: false,
   defaultInstallLabel: 'Install',
   defaultInstallText: 'One-tap access anytime.',
@@ -70,11 +72,9 @@ const PWAInstall = {
 
     window.addEventListener('beforeinstallprompt', (event) => this.capturePrompt(event));
     window.addEventListener('appinstalled', () => this.onAppInstalled());
-    window.addEventListener('dbc-pwa-prompt-ready', () => {
-      if (window.__dbcDeferredPrompt) {
-        this.capturePrompt(window.__dbcDeferredPrompt);
-      }
-    });
+    window.addEventListener('dbc-pwa-prompt-ready', () => this.onPromptReadySignal());
+    window.addEventListener('dbc-pwa-sw-ready', () => this.onServiceWorkerReady());
+    window.addEventListener('dbc-pwa-sw-controlling', () => this.onServiceWorkerReady());
 
     this.hide();
 
@@ -84,12 +84,8 @@ const PWAInstall = {
 
     if (window.__dbcDeferredPrompt) {
       this.capturePrompt(window.__dbcDeferredPrompt);
-    } else if (this.isIOS()) {
-      this.fallbackTimer = window.setTimeout(() => {
-        if (!this.dismissedThisView && !this.isStandalone()) {
-          this.show();
-        }
-      }, 1200);
+    } else {
+      this.schedulePlatformFallback();
     }
 
     this.installBtn?.addEventListener('click', () => this.promptInstall());
@@ -111,6 +107,80 @@ const PWAInstall = {
     this.updateInstallButtonState();
   },
 
+  onPromptReadySignal() {
+    if (window.__dbcDeferredPrompt) {
+      this.capturePrompt(window.__dbcDeferredPrompt);
+    }
+  },
+
+  onServiceWorkerReady() {
+    if (this.getDeferredPrompt()) {
+      this.capturePrompt(this.getDeferredPrompt());
+      return;
+    }
+
+    this.scheduleInstallabilityBanner();
+  },
+
+  schedulePlatformFallback() {
+    if (this.isIOS()) {
+      this.fallbackTimer = window.setTimeout(() => {
+        if (!this.dismissedThisView && !this.isStandalone()) {
+          this.show();
+        }
+      }, 1200);
+      return;
+    }
+
+    if (this.isInstallablePlatform()) {
+      this.scheduleInstallabilityBanner();
+    }
+  },
+
+  scheduleInstallabilityBanner() {
+    if (this.installabilityTimer || this.dismissedThisView || this.isStandalone()) {
+      return;
+    }
+
+    this.installabilityTimer = window.setTimeout(() => {
+      this.installabilityTimer = null;
+
+      if (this.dismissedThisView || this.isStandalone() || this.getDeferredPrompt()) {
+        return;
+      }
+
+      if (this.isInstallablePlatform()) {
+        this.show();
+        this.waitForLatePrompt();
+      }
+    }, 1500);
+  },
+
+  waitForLatePrompt() {
+    if (this.promptWaitTimer || this.getDeferredPrompt()) {
+      return;
+    }
+
+    var attempts = 0;
+    var self = this;
+
+    this.promptWaitTimer = window.setInterval(function () {
+      attempts += 1;
+
+      if (self.getDeferredPrompt()) {
+        self.capturePrompt(self.getDeferredPrompt());
+        window.clearInterval(self.promptWaitTimer);
+        self.promptWaitTimer = null;
+        return;
+      }
+
+      if (attempts >= 20) {
+        window.clearInterval(self.promptWaitTimer);
+        self.promptWaitTimer = null;
+      }
+    }, 500);
+  },
+
   capturePrompt(event) {
     const prompt = (event && typeof event.prompt === 'function')
       ? event
@@ -130,6 +200,16 @@ const PWAInstall = {
     if (this.fallbackTimer) {
       window.clearTimeout(this.fallbackTimer);
       this.fallbackTimer = null;
+    }
+
+    if (this.installabilityTimer) {
+      window.clearTimeout(this.installabilityTimer);
+      this.installabilityTimer = null;
+    }
+
+    if (this.promptWaitTimer) {
+      window.clearInterval(this.promptWaitTimer);
+      this.promptWaitTimer = null;
     }
 
     this.hideGuide();
@@ -155,6 +235,22 @@ const PWAInstall = {
 
   isIOS() {
     return /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+  },
+
+  isInstallablePlatform() {
+    if (this.isIOS()) {
+      return true;
+    }
+
+    if (!('serviceWorker' in navigator)) {
+      return false;
+    }
+
+    if (window.__dbcPwaSwControlling || navigator.serviceWorker.controller) {
+      return true;
+    }
+
+    return /Android|CrOS|Windows/i.test(navigator.userAgent || '');
   },
 
   isInAppBrowser() {
