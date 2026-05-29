@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dbc-v28';
+const CACHE_VERSION = 'dbc-v29';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -9,7 +9,7 @@ const PRECACHE_URLS = [
   '/data/card.json',
   '/js/pwa.js',
   '/js/main.js',
-  '/js/components/InstallBanner.js?v=11',
+  '/js/components/InstallBanner.js?v=12',
   '/styles/variables.css',
   '/styles/base.css',
   '/styles/components.css',

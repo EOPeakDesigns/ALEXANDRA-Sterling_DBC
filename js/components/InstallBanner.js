@@ -8,12 +8,13 @@ const PWAInstall = {
   installBtn: null,
   dismissBtn: null,
   closeBtn: null,
+  guideEl: null,
   installedKey: 'dbc-pwa-installed-v2',
   dismissedThisView: false,
   fallbackTimer: null,
+  promptWatchTimer: null,
   initialized: false,
-  boundOnPromptReady: null,
-  boundOnAppInstalled: null,
+  defaultInstallLabel: 'Install',
 
   applyLabels(labels = {}) {
     if (labels.installTitle) {
@@ -31,6 +32,7 @@ const PWAInstall = {
     }
 
     if (labels.installApp) {
+      this.defaultInstallLabel = labels.installApp;
       const installButton = document.getElementById('pwa-install-btn');
       if (installButton) {
         installButton.textContent = labels.installApp;
@@ -55,42 +57,39 @@ const PWAInstall = {
     this.installBtn = document.getElementById('pwa-install-btn');
     this.dismissBtn = document.getElementById('pwa-install-dismiss');
     this.closeBtn = document.querySelector('.install-banner__close');
+    this.guideEl = document.getElementById('install-banner-guide');
 
     if (!this.banner) {
       return;
     }
 
-    this.boundOnPromptReady = (event) => this.onBeforeInstallPrompt(event);
-    this.boundOnAppInstalled = () => this.onAppInstalled();
-
-    window.addEventListener('beforeinstallprompt', this.boundOnPromptReady);
-    window.addEventListener('appinstalled', this.boundOnAppInstalled);
+    window.addEventListener('beforeinstallprompt', (event) => this.capturePrompt(event));
+    window.addEventListener('appinstalled', () => this.onAppInstalled());
     window.addEventListener('dbc-pwa-prompt-ready', () => {
       if (window.__dbcDeferredPrompt) {
-        this.onBeforeInstallPrompt(window.__dbcDeferredPrompt);
+        this.capturePrompt(window.__dbcDeferredPrompt);
       }
     });
+    window.addEventListener('dbc-pwa-sw-ready', () => this.updateInstallButtonState());
 
     this.hide();
+    this.clearStaleInstalledFlag();
 
     if (this.isStandalone()) {
       localStorage.setItem(this.installedKey, '1');
       return;
     }
 
-    if (localStorage.getItem(this.installedKey)) {
-      this.hide();
+    if (window.__dbcDeferredPrompt) {
+      this.capturePrompt(window.__dbcDeferredPrompt);
     }
 
     this.fallbackTimer = window.setTimeout(() => {
-      if (!this.deferredPrompt && !this.dismissedThisView && !this.isKnownInstalled()) {
+      if (!this.dismissedThisView && !this.isKnownInstalled()) {
         this.show();
+        this.updateInstallButtonState();
       }
     }, 1200);
-
-    if (window.__dbcDeferredPrompt) {
-      this.onBeforeInstallPrompt(window.__dbcDeferredPrompt);
-    }
 
     if (this.installBtn) {
       this.installBtn.addEventListener('click', () => this.promptInstall());
@@ -101,6 +100,7 @@ const PWAInstall = {
         event.preventDefault();
         event.stopPropagation();
         this.dismissedThisView = true;
+        this.hideGuide();
         this.hide();
       });
     }
@@ -110,12 +110,25 @@ const PWAInstall = {
         event.preventDefault();
         event.stopPropagation();
         this.dismissedThisView = true;
+        this.hideGuide();
         this.hide();
       });
     }
+
+    this.updateInstallButtonState();
   },
 
-  onBeforeInstallPrompt(event) {
+  clearStaleInstalledFlag() {
+    if (localStorage.getItem(this.installedKey) === '1' && !this.isStandalone()) {
+      try {
+        localStorage.removeItem(this.installedKey);
+      } catch (error) {
+        // Ignore storage errors.
+      }
+    }
+  },
+
+  capturePrompt(event) {
     const prompt = (event && typeof event.prompt === 'function')
       ? event
       : window.__dbcDeferredPrompt;
@@ -137,6 +150,9 @@ const PWAInstall = {
     }
 
     localStorage.removeItem(this.installedKey);
+    this.stopPromptWatch();
+    this.hideGuide();
+    this.updateInstallButtonState();
 
     if (!this.dismissedThisView) {
       this.show();
@@ -147,6 +163,7 @@ const PWAInstall = {
     localStorage.setItem(this.installedKey, '1');
     this.deferredPrompt = null;
     window.__dbcDeferredPrompt = null;
+    this.stopPromptWatch();
     this.hide();
   },
 
@@ -158,7 +175,24 @@ const PWAInstall = {
   },
 
   isKnownInstalled() {
-    return this.isStandalone() || localStorage.getItem(this.installedKey);
+    return this.isStandalone();
+  },
+
+  isIOS() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+  },
+
+  isAndroid() {
+    return /Android/i.test(navigator.userAgent || '');
+  },
+
+  isInAppBrowser() {
+    const ua = navigator.userAgent || '';
+
+    return (
+      /FBAN|FBAV|Instagram|Line\/|Twitter|WhatsApp|Snapchat|TikTok|LinkedInApp/i.test(ua) ||
+      (/Android/i.test(ua) && /\bwv\b/.test(ua))
+    );
   },
 
   show() {
@@ -179,64 +213,170 @@ const PWAInstall = {
 
     this.banner.hidden = true;
     this.banner.setAttribute('hidden', '');
-    this.banner.classList.remove('install-banner--visible');
+    this.banner.classList.remove('install-banner--visible', 'install-banner--guide-open');
     this.banner.setAttribute('aria-hidden', 'true');
+    this.hideGuide();
+  },
+
+  hideGuide() {
+    if (!this.guideEl) {
+      return;
+    }
+
+    this.guideEl.hidden = true;
+    this.guideEl.textContent = '';
+    this.banner?.classList.remove('install-banner--guide-open');
+  },
+
+  showGuide(message) {
+    if (!this.guideEl || !message) {
+      return;
+    }
+
+    this.guideEl.textContent = message;
+    this.guideEl.hidden = false;
+    this.banner?.classList.add('install-banner--guide-open');
   },
 
   getDeferredPrompt() {
     return this.deferredPrompt || window.__dbcDeferredPrompt || null;
   },
 
-  async promptInstall() {
-    const prompt = this.getDeferredPrompt();
-
-    if (!prompt || typeof prompt.prompt !== 'function') {
-      this.showManualInstallHelp();
-      return;
-    }
-
-    try {
-      prompt.prompt();
-      const choice = await prompt.userChoice;
-
-      if (!choice || choice.outcome !== 'accepted') {
-        this.dismissedThisView = true;
-      }
-    } catch (error) {
-      console.warn('PWA install prompt failed:', error);
-      this.showManualInstallHelp();
-      return;
-    }
-
-    this.deferredPrompt = null;
-    window.__dbcDeferredPrompt = null;
-    this.hide();
+  canNativeInstall() {
+    return Boolean(this.getDeferredPrompt());
   },
 
-  showManualInstallHelp() {
-    const ua = navigator.userAgent || '';
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  updateInstallButtonState() {
+    if (!this.installBtn) {
+      return;
+    }
 
-    if (isIOS) {
-      window.alert('To add this card: tap Share, then Add to Home Screen.');
+    const ready = this.canNativeInstall();
+    const waiting = Boolean(this.promptWatchTimer);
+
+    this.installBtn.classList.toggle('is-ready', ready);
+    this.installBtn.classList.toggle('is-waiting', waiting && !ready);
+    this.installBtn.disabled = waiting && !ready;
+
+    if (waiting && !ready) {
+      this.installBtn.textContent = 'Preparing…';
+      return;
+    }
+
+    this.installBtn.textContent = this.defaultInstallLabel;
+    this.installBtn.setAttribute('aria-label', ready
+      ? `${this.defaultInstallLabel} — ready`
+      : this.defaultInstallLabel);
+  },
+
+  promptInstall() {
+    if (this.isIOS()) {
+      this.promptInstallIOS();
       return;
     }
 
     if (this.isInAppBrowser()) {
+      this.showGuide('Opening Chrome so you can install…');
       this.openInChrome();
       return;
     }
 
-    window.alert('Use your browser menu and choose Install app or Add to Home screen.');
+    const prompt = this.getDeferredPrompt();
+
+    if (prompt) {
+      this.runNativeInstallPrompt(prompt);
+      return;
+    }
+
+    this.waitForNativePrompt();
   },
 
-  isInAppBrowser() {
-    const ua = navigator.userAgent || '';
+  runNativeInstallPrompt(prompt) {
+    this.hideGuide();
 
-    return (
-      /FBAN|FBAV|Instagram|Line\/|Twitter|WhatsApp|Snapchat|TikTok|LinkedInApp/i.test(ua) ||
-      (/Android/i.test(ua) && /\bwv\b/.test(ua))
-    );
+    try {
+      prompt.prompt();
+    } catch (error) {
+      console.warn('PWA install prompt failed:', error);
+      this.waitForNativePrompt();
+      return;
+    }
+
+    prompt.userChoice
+      .then((choice) => {
+        if (!choice || choice.outcome !== 'accepted') {
+          this.dismissedThisView = true;
+        }
+      })
+      .catch((error) => {
+        console.warn('PWA install choice failed:', error);
+      })
+      .finally(() => {
+        this.deferredPrompt = null;
+        window.__dbcDeferredPrompt = null;
+        this.updateInstallButtonState();
+        this.hide();
+      });
+  },
+
+  waitForNativePrompt() {
+    if (this.promptWatchTimer) {
+      return;
+    }
+
+    this.showGuide('Preparing install — one moment…');
+    this.updateInstallButtonState();
+
+    var attempts = 0;
+    var maxAttempts = 24;
+
+    this.promptWatchTimer = window.setInterval(() => {
+      attempts += 1;
+      const prompt = this.getDeferredPrompt();
+
+      if (prompt) {
+        this.stopPromptWatch();
+        this.hideGuide();
+        this.updateInstallButtonState();
+        this.showGuide('Install is ready — tap Install again.');
+        return;
+      }
+
+      if (attempts >= maxAttempts) {
+        this.stopPromptWatch();
+        this.updateInstallButtonState();
+        this.showGuide('Install is almost ready — wait a few seconds, then tap Install again.');
+      }
+    }, 500);
+  },
+
+  stopPromptWatch() {
+    if (this.promptWatchTimer) {
+      window.clearInterval(this.promptWatchTimer);
+      this.promptWatchTimer = null;
+    }
+  },
+
+  async promptInstallIOS() {
+    const shareData = {
+      title: document.title || 'Alexandra Sterling',
+      text: 'Save this card to your home screen.',
+      url: window.location.href.split('#')[0]
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        this.hideGuide();
+        return;
+      } catch (error) {
+        if (error?.name === 'AbortError') {
+          return;
+        }
+      }
+    }
+
+    this.showGuide('Tap Share, then Add to Home Screen.');
   },
 
   openInChrome() {

@@ -663,7 +663,7 @@ Each component is self-contained and reusable.
 }
 
 .install-banner__action.is-waiting {
-  opacity: 0.82;
+  opacity: 0.88;
   pointer-events: none;
 }
 
