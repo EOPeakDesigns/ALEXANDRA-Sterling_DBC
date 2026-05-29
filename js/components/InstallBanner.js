@@ -1,9 +1,8 @@
 /**
- * PWA Install Banner — compact mobile prompt, bottom-right
+ * PWA Install Banner - compact mobile prompt, bottom-right
  */
 
-const INSTALL_DISMISS_KEY = 'dbc-install-dismiss-v3';
-const INSTALL_INSTALLED_KEY = 'dbc-install-installed-v3';
+const INSTALL_INSTALLED_KEY = 'dbc-install-installed-v4';
 const SHOW_ATTEMPT_DELAYS_MS = [800, 2200, 4500];
 
 const INSTALL_GUIDES = {
@@ -24,6 +23,7 @@ class InstallBanner {
     this.deferredPrompt = null;
     this.promptReceived = false;
     this.isVisible = false;
+    this.closedForCurrentPage = false;
     this.showTimers = [];
     this.labels = {};
 
@@ -68,7 +68,7 @@ class InstallBanner {
       return;
     }
 
-    if (this.isDismissed()) {
+    if (this.wasInstalledFromThisBrowser()) {
       return;
     }
 
@@ -78,13 +78,13 @@ class InstallBanner {
     this.closeButton?.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      this.dismiss();
+      this.closeForNow();
     });
 
     this.dismissButton?.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      this.dismiss();
+      this.closeForNow();
     });
 
     this.installButton?.addEventListener('click', async (event) => {
@@ -220,19 +220,16 @@ class InstallBanner {
     );
   }
 
-  isDismissed() {
-    return (
-      localStorage.getItem(INSTALL_DISMISS_KEY) === '1' ||
-      localStorage.getItem(INSTALL_INSTALLED_KEY) === '1'
-    );
+  wasInstalledFromThisBrowser() {
+    return this.getStorageValue(INSTALL_INSTALLED_KEY) === '1';
   }
 
   markInstalled() {
-    localStorage.setItem(INSTALL_INSTALLED_KEY, '1');
+    this.setStorageValue(INSTALL_INSTALLED_KEY, '1');
   }
 
   shouldShow() {
-    if (this.isStandalone() || this.isDismissed()) {
+    if (this.isStandalone() || this.wasInstalledFromThisBrowser() || this.closedForCurrentPage) {
       return false;
     }
 
@@ -275,19 +272,35 @@ class InstallBanner {
     document.removeEventListener('keydown', this.handleKeydown);
 
     if (persistDismiss) {
-      localStorage.setItem(INSTALL_DISMISS_KEY, '1');
+      this.closedForCurrentPage = true;
       this.clearShowTimers();
     }
   }
 
-  dismiss() {
+  closeForNow() {
     this.hide(true);
     this.closeButton?.blur();
   }
 
   handleKeydown(event) {
     if (event.key === 'Escape') {
-      this.dismiss();
+      this.closeForNow();
+    }
+  }
+
+  getStorageValue(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  setStorageValue(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      // Storage can be unavailable in private modes; install state still works via display-mode.
     }
   }
 
@@ -300,5 +313,5 @@ class InstallBanner {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { InstallBanner, INSTALL_DISMISS_KEY, INSTALL_INSTALLED_KEY };
+  module.exports = { InstallBanner, INSTALL_INSTALLED_KEY };
 }

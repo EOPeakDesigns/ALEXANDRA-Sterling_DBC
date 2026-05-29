@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dbc-v16';
+const CACHE_VERSION = 'dbc-v18';
 const CACHE_NAME = `business-card-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -20,7 +20,7 @@ const PRECACHE_URLS = [
   './js/components/SocialBar.js',
   './js/components/QRModal.js',
   './js/components/VideoModal.js?v=2',
-  './js/components/InstallBanner.js',
+  './js/components/InstallBanner.js?v=3',
   './js/components/ActionFlower.js',
   './assets/icons/favicon/site.webmanifest',
   './assets/icons/favicon/svg/favicon.svg',
@@ -62,6 +62,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  if (event.request.mode === 'navigate' || shouldUseNetworkFirst(requestUrl)) {
+    event.respondWith(networkFirst(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const networkFetch = fetch(event.request)
@@ -78,3 +83,25 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+function shouldUseNetworkFirst(url) {
+  return (
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.json') ||
+    url.pathname === '/'
+  );
+}
+
+function networkFirst(request) {
+  return fetch(request)
+    .then((response) => {
+      if (response && response.status === 200 && response.type === 'basic') {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+      }
+      return response;
+    })
+    .catch(() => caches.match(request));
+}
